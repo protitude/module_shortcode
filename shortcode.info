@@ -1,6 +1,0 @@
-; $Id:                                        
-name = Shortcode                                                                               
-description = Provides shortcodes filter framework and API (like WP shortcodes)                                                      
-package = Shortcode                                                                                              
-core = 6.x
-dependencies[] = filter
