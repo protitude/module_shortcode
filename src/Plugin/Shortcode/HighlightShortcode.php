@@ -28,8 +28,8 @@ class HighlightShortcode extends ShortcodeBase {
 
     // Merge with default attributes.
     $attributes = $this->getAttributes(array(
-        'class' => '',
-      ),
+      'class' => '',
+    ),
       $attributes
     );
 

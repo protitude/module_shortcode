@@ -12,7 +12,7 @@
 <span class="{{ class }}">
   {% if author %}
     {# TODO: Make translatable #}
-    <span class="quote-author">{{ author }} wrote: </span>
+    <span class="quote-author">{{ author | trans }} wrote: </span>
   {% endif %}
-  {{ text }}
+  {{ text | raw }}
 </span>

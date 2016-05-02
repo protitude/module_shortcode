@@ -27,10 +27,10 @@ class ImageShortcode extends ShortcodeBase {
 
     // Merge with default attributes.
     $attributes = $this->getAttributes(array(
-        'class' => '',
-        'alt' => '',
-        'src' => '',
-      ),
+      'class' => '',
+      'alt' => '',
+      'src' => '',
+    ),
       $attributes
     );
 
@@ -42,7 +42,8 @@ class ImageShortcode extends ShortcodeBase {
       '#class' => $class,
       '#alt' => $attributes['alt'],
     );
-    return render($output);
+
+    return $this->render($output);
   }
 
   /**

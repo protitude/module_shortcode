@@ -9,6 +9,7 @@ namespace Drupal\shortcode\Plugin;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
+use Drupal\Core\Render\Renderer;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\Html;
 
@@ -64,7 +65,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
   /**
    * {@inheritdoc}
    */
-  public function getConfiguration(){
+  public function getConfiguration() {
     return array(
       'id' => $this->getPluginId(),
       'provider' => $this->pluginDefinition['provider'],
@@ -76,7 +77,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
   /**
    * {@inheritdoc}
    */
-  public function setConfiguration(array $configuration){
+  public function setConfiguration(array $configuration) {
     if (isset($configuration['status'])) {
       $this->status = (bool) $configuration['status'];
     }
@@ -89,7 +90,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration(){
+  public function defaultConfiguration() {
     return array(
       'provider' => $this->pluginDefinition['provider'],
       'status' => FALSE,
@@ -213,7 +214,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    */
   public function getUrlFromPath($path, $url = NULL, $url_overrides_path = TRUE) {
 
-    if (!empty($url)){
+    if (!empty($url)) {
       if ($url_overrides_path) {
         return $url;
       }
@@ -222,7 +223,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
     if ($path === '<front>') {
       $path = '/';
     }
-    else{
+    else {
       $path = '/' . ltrim($path, '/');
     }
 
@@ -257,6 +258,22 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
     }
 
     return $title;
+  }
+
+  /**
+   * Wrapper for renderPlain.
+   *
+   * We use renderplain so that the shortcode's cache tags would not bubble up
+   * to the parent and affect cacheability. Shortcode should be part of content
+   * and self-container.
+   *
+   * @param $element
+   * @return \Drupal\Component\Render\MarkupInterface|mixed
+   */
+  public function render(&$element) {
+    /** @var Renderer $renderer */
+    $renderer = \Drupal::service('renderer');
+    return $renderer->renderPlain($element);
   }
 
 }

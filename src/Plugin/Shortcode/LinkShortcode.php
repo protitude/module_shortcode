@@ -60,7 +60,7 @@ class LinkShortcode extends ShortcodeBase {
         '#attributes' => $element_attributes,
         '#text' => $text,
       ];
-      return render($output);
+      return $this->render($output);
     }
     return $url;
   }

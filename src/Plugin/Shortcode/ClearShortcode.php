@@ -27,11 +27,11 @@ class ClearShortcode extends ShortcodeBase {
 
     // Merge with default attributes.
     $attributes = $this->getAttributes(array(
-        'class' => '',
-        'id' => '',
-        'style' => '',
-        'type' => 'div', //default element to div.
-      ),
+      'class' => '',
+      'id' => '',
+      'style' => '',
+      'type' => 'div', //default element to div.
+    ),
       $attributes
     );
 
@@ -56,7 +56,7 @@ class ClearShortcode extends ShortcodeBase {
     $element_attributes = [
       'class' => $class,
       'id' => $attributes['id'],
-      'style' => $attributes['style']
+      'style' => $attributes['style'],
     ];
 
     // Filter away empty attributes.
@@ -68,7 +68,8 @@ class ClearShortcode extends ShortcodeBase {
       '#attributes' => $element_attributes,
       '#text' => $text,
     ];
-    return render($output);
+
+    return $this->render($output);
   }
 
   /**

@@ -27,9 +27,9 @@ class DropcapShortcode extends ShortcodeBase {
 
     // Merge with default attributes.
     $attributes = $this->getAttributes(array(
-        'class' => '',
-        'author' => '',
-      ),
+      'class' => '',
+      'author' => '',
+    ),
       $attributes
     );
 
@@ -40,7 +40,8 @@ class DropcapShortcode extends ShortcodeBase {
       '#class' => $class,
       '#text' => $text,
     ];
-    return render($output);
+
+    return $this->render($output);
   }
 
   /**

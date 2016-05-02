@@ -27,11 +27,11 @@ class ItemShortcode extends ShortcodeBase {
 
     // Merge with default attributes.
     $attributes = $this->getAttributes(array(
-        'class' => '',
-        'id' => '',
-        'style' => '',
-        'type' => 'div', //default element to div.
-      ),
+      'class' => '',
+      'id' => '',
+      'style' => '',
+      'type' => 'div', //default element to div.
+    ),
       $attributes
     );
 
@@ -54,7 +54,7 @@ class ItemShortcode extends ShortcodeBase {
     $element_attributes = [
       'class' => $attributes['class'],
       'id' => $attributes['id'],
-      'style' => $attributes['style']
+      'style' => $attributes['style'],
     ];
 
     // Filter away empty attributes.
@@ -66,7 +66,7 @@ class ItemShortcode extends ShortcodeBase {
       '#attributes' => $element_attributes,
       '#text' => $text,
     ];
-    return render($output);
+    return $this->render($output);
   }
 
   /**

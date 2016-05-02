@@ -33,7 +33,7 @@ class ButtonShortcode extends ShortcodeBase {
       'class' => '',
       'id' => '',
       'style' => '',
-      ),
+    ),
       $attributes
     );
 
@@ -59,7 +59,8 @@ class ButtonShortcode extends ShortcodeBase {
       '#attributes' => $element_attributes,
       '#text' => $text,
     ];
-    return render($output);
+
+    return $this->render($output);
   }
 
   /**

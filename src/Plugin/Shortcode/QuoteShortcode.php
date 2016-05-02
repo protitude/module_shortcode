@@ -27,9 +27,9 @@ class QuoteShortcode extends ShortcodeBase {
 
     // Merge with default attributes.
     $attributes = $this->getAttributes(array(
-        'class' => '',
-        'author' => '',
-      ),
+      'class' => '',
+      'author' => '',
+    ),
       $attributes
     );
 
@@ -41,7 +41,7 @@ class QuoteShortcode extends ShortcodeBase {
       '#author' => $attributes['author'],
       '#text' => $text,
     ];
-    return render($output);
+    return $this->render($output);
   }
 
   /**
