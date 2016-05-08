@@ -41,11 +41,11 @@ class ShortcodeTest extends WebTestBase {
   /**
    * WIP
    */
-  public function testTextFormat() {
-    //$this->drupalLogin($this->user);
-    //$this->drupalGet($path);
-    //$this->assertResponse(200);
-  }
+  //public function testTextFormat() {
+  //  $this->drupalLogin($this->user);
+  //  $this->drupalGet($path);
+  //  $this->assertResponse(200);
+  //}
 
   /**
    * Tests that the Button shortcode returns the right content.
@@ -140,6 +140,22 @@ class ShortcodeTest extends WebTestBase {
   }
 
   /**
+   * Tests that the highlight shortcode returns the right content.
+   */
+  public function testHighlightShortcode() {
+
+    $test_input = '[highlight]highlighted text[/highlight]';
+    $expected_output = '<span class="highlight">highlighted text</span>';
+    $output = $this->shortcodeService->process($test_input);
+    $this->assertEqual($output, $expected_output, 'Highlight shortcode output matches.');
+
+    $test_input = '[highlight class="custom-class"]highlighted text[/highlight]';
+    $expected_output = '<span class="highlight custom-class">highlighted text</span>';
+    $output = $this->shortcodeService->process($test_input);
+    $this->assertEqual($output, $expected_output, 'Highlight shortcode with custom class output matches.');
+  }
+
+  /**
    * Tests that the Image shortcode returns the right content.
    */
   public function testImgShortcode() {
@@ -164,18 +180,130 @@ class ShortcodeTest extends WebTestBase {
   }
 
   /**
-   * Tests that the highlight shortcode returns the right content.
+   * Tests that the Item shortcode returns the right content.
    */
-  public function testHighlightShortcode() {
+  public function testItemShortcode() {
 
-    $test_input = '[highlight]highlighted text[/highlight]';
-    $expected_output = '<span class="highlight">highlighted text</span>';
-    $output = $this->shortcodeService->process($test_input);
-    $this->assertEqual($output, $expected_output, 'Highlight shortcode output matches.');
 
-    $test_input = '[highlight class="custom-class"]highlighted text[/highlight]';
-    $expected_output = '<span class="highlight custom-class">highlighted text</span>';
-    $output = $this->shortcodeService->process($test_input);
-    $this->assertEqual($output, $expected_output, 'Highlight shortcode with custom class output matches.');
+    $sets = array(
+      array(
+        'input' => '[item]Item body here[/item]',
+        'output' => '<div>Item body here</div>',
+        'message' => 'Item shortcode output matches.',
+      ),
+      array(
+        'input' => '[item type="s"]Item body here[/item]',
+        'output' => '<span>Item body here</span>',
+        'message' => 'Item shortcode with custom type "s" output matches.',
+      ),
+      array(
+        'input' => '[item type="d" class="item-class-here" style="background-color:#F00"]Item body here[/item]',
+        'output' => '<div class="item-class-here" style="background-color:#F00">Item body here</div>',
+        'message' => 'Item shortcode with custom type "d" and class and styles output matches.',
+      ),
+      array(
+        'input' => '[item type="s" class="item-class-here" style="background-color:#F00"]Item body here[/item]',
+        'output' => '<span class="item-class-here" style="background-color:#F00">Item body here</span>',
+        'message' => 'Item shortcode with custom type "s" and class and styles output matches.',
+      ),
+    );
+
+    foreach ($sets as $set) {
+      $output = $this->shortcodeService->process($set['input']);
+      $this->assertEqual($output, $set['output'], $set['message']);
+    }
+  }
+
+  /**
+   * Tests that the Link shortcode returns the right content.
+   */
+  public function testLinkShortcode() {
+
+    $sets = array(
+      array(
+        'input' => '[link path="node/1"]Label[/link]',
+        'output' => '<a href="/node/1" title="Label">Label</a>',
+        'message' => 'Link shortcode output matches.',
+      ),
+      array(
+        'input' => '[link path="node/23" title="Google" class="link-class" style="background-color:#0FF;"] Label [/link]',
+        'output' => '<a href="/node/23" class="link-class" style="background-color:#0FF;" title="Google"> Label </a>',
+        'message' => 'Link shortcode with title and attributes output matches.',
+      ),
+      array(
+        'input' => '[link url="http://google.com" title="Google" class="link-class" style="background-color:#0FF;"] Label [/link]',
+        'output' => '<a href="http://google.com" class="link-class" style="background-color:#0FF;" title="Google"> Label </a>',
+        'message' => 'Link shortcode with url, title and attributes output matches.',
+      ),
+      array(
+        'input' => '[link path="node/23" url="http://google.com" title="Google" class="link-class" style="background-color:#0FF;"] Label [/link]',
+        'output' => '<a href="http://google.com" class="link-class" style="background-color:#0FF;" title="Google"> Label </a>',
+        'message' => 'Link shortcode with both path and url, title and attributes output matches.',
+      ),
+    );
+
+    foreach ($sets as $set) {
+      $output = $this->shortcodeService->process($set['input']);
+      $this->assertEqual($output, $set['output'], $set['message']);
+    }
+  }
+
+  /**
+   * Tests that the Quote shortcode returns the right content.
+   */
+  public function testQuoteShortcode() {
+
+    $sets = array(
+      array(
+        'input' => '[quote]This is by no one[/quote]',
+        'output' => '<span class="quote"> This is by no one </span>',
+        'message' => 'Quote shortcode output matches.',
+      ),
+      array(
+        'input' => '[quote class="test-quote"]This is by no one[/quote]',
+        'output' => '<span class="quote test-quote"> This is by no one </span>',
+        'message' => 'Quote shortcode with class output matches.',
+      ),
+      array(
+        'input' => '[quote class="test-quote" author="ryan"]This is by ryan[/quote]',
+        'output' => '<span class="quote test-quote"> <span class="quote-author">ryan wrote: </span> This is by ryan </span>',
+        'message' => 'Quote shortcode with class and author output matches.',
+      ),
+    );
+
+    foreach ($sets as $set) {
+      $output = $this->shortcodeService->process($set['input']);
+      $output = preg_replace('/\s+/', ' ', $output);
+      $this->assertEqual($output, $set['output'], $set['message']);
+    }
+  }
+
+  /**
+   * Tests that the Random shortcode returns the right length.
+   */
+  public function testRandomShortcode() {
+
+    $sets = array(
+      array(
+        'input' => '[random/]',
+        'output' => 8,
+        'message' => 'Random shortcode self-closed, output length is correct.',
+      ),
+      array(
+        'input' => '[random][/random]',
+        'output' => 8,
+        'message' => 'Random shortcode output, length is correct.',
+      ),
+      array(
+        'input' => '[random length=10][/random]',
+        'output' => 10,
+        'message' => 'Random shortcode with custom length, output length is correct.',
+      ),
+    );
+
+    foreach ($sets as $set) {
+      $output = $this->shortcodeService->process($set['input']);
+      $this->assertEqual(strlen($output), $set['output'], $set['message']);
+    }
   }
 }
