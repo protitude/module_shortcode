@@ -35,7 +35,7 @@ class Shortcode extends FilterBase {
 
     /** @var \Drupal\shortcode\Shortcode\ShortcodeService $shortcodeService */
     $shortcodeService = \Drupal::service('shortcode');
-    $shortcodes = $shortcodeService->listAll();
+    $shortcodes = $shortcodeService->getShortcodePlugins();
 
     /** @var \Drupal\Core\Plugin\DefaultPluginManager $type */
     $type = \Drupal::service('plugin.manager.shortcode');
@@ -96,44 +96,20 @@ class Shortcode extends FilterBase {
 
     // Get enabled shortcodes for a specific text format.
 
-    // Drupal 7 way:
-    //$shortcodes = shortcode_list_all_enabled($format);
-
-    // Drupal 8 way:
-    /** @var \Drupal\shortcode\Shortcode\ShortcodePluginManager $type */
-    $type = \Drupal::service('plugin.manager.shortcode');
-    $shortcodes = $type->getDefinitions();
+    /** @var \Drupal\shortcode\Shortcode\ShortcodeService $type */
+    $type = \Drupal::service('shortcode');
+    $shortcodes = $type->getShortcodePlugins($this);
 
     // Gather tips defined in all enabled plugins.
     $tips = array();
 
-    // Drupal 7 way:
-//    if ($long) {
-//      foreach ($filter->settings as $name => $enabled) {
-//        if ($enabled && !empty($shortcodes[$name]['tips callback']) && is_string($shortcodes[$name]['tips callback']) && function_exists($shortcodes[$name]['tips callback'])) {
-//          $tips[] = call_user_func_array($shortcodes[$name]['tips callback'], array($format, $long));
-//        }
-//      }
-//      return theme('item_list',
-//        array(
-//          'title' => t('Shortcodes usage'),
-//          'items' => $tips,
-//          'type' => 'ol',
-//        )
-//      );
-//
-//    }
-//    else {
-//      return t('Short tip for shortcodes (WIP).');
-//    }
+    /** @var \Drupal\shortcode\Shortcode\ShortcodePluginManager $type */
+    $type = \Drupal::service('plugin.manager.shortcode');
 
-
-    // Drupal 8 way:
     foreach ($shortcodes as $plugin_id => $shortcode_info) {
       /** @var \Drupal\shortcode\Plugin\ShortcodeInterface $shortcode */
       $shortcode = $type->createInstance($plugin_id);
       $tips[] = $shortcode->tips($long);
-
     }
 
     $output = '';

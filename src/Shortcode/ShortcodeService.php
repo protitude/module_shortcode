@@ -6,108 +6,107 @@
 
 namespace Drupal\shortcode\Shortcode;
 
-use Drupal\filter\Plugin\FilterBase;
+use Drupal\filter\Plugin\FilterInterface;
 use Drupal\Core\Language\Language;
+use Drupal\Component\Plugin\PluginManagerInterface;
 
 class ShortcodeService {
 
   /**
-   * Builds a list of all Shortcodes (for filter).
+   * Returns array of shortcode plugin definitions enabled for the filter.
    *
-   * Returns all defined and altered Shortcode definitions.
+   * @param FilterInterface $filter
+   *   The filter. Defaults to NULL, where all shortcode plugins will be
+   *   returned.
    *
    * @param bool $reset
-   *   TRUE if the static cache should be reset.
+   *   TRUE if the static cache should be reset. Defaults to FALSE.
    *
    * @return array
-   *   Array of shortcode plugins.
+   *   Array of shortcode plugin definitions.
    */
-  public function listAll($reset = FALSE) {
+  function getShortcodePlugins(FilterInterface $filter = NULL, $reset = FALSE) {
     $shortcodes = &drupal_static(__FUNCTION__);
 
     if (!isset($shortcodes) || $reset) {
-      /** @var \Drupal\Core\Plugin\DefaultPluginManager $type */
+      /** @var PluginManagerInterface $type */
       $type = \Drupal::service('plugin.manager.shortcode');
-      $shortcodes = $type->getDefinitions();
-    }
 
-    return $shortcodes;
-  }
-
-  /**
-   * Returns only enabled Shortcodes for a specified input format.
-   *
-   * @param $format
-   *   The text format.
-   * @param bool $reset
-   *   TRUE if the static cache should be reset.
-   *
-   * @return array
-   *   Array of shortcode plugins.
-   */
-  function listAllEnabled($format, $reset = FALSE) {
-    if (is_string($format)) {
-      $format = filter_format_load($format);
-    }
-
-    $shortcodes_enabled = &drupal_static(__FUNCTION__, array());
-
-    if (isset($shortcodes_enabled[$format->format]) && !$reset) {
-      return $shortcodes_enabled[$format->format];
-    }
-    $shortcodes_enabled[$format->format] = array();
-
-    $shortcodes = $this->listAll($reset);
-    $filters = filter_list_format($format->format);
-
-    if (empty($filters['shortcode'])) {
-      return array();
-    }
-
-    // Run through all Shortcodes defined.
-    foreach ($filters['shortcode']->settings as $name => $enabled) {
-      if ($enabled && !empty($shortcodes[$name])) {
-        $shortcodes_enabled[$format->format][$name] = $shortcodes[$name];
+      $definitions_raw = $type->getDefinitions();
+      $definitions = array();
+      foreach ($definitions_raw as $definition) {
+        $definitions[$definition['id']] = $definition;
       }
+
+      // Alteration of the ShortCode plugin definitions should utilize
+      // plugin manager's $alterHook, instead of D7's drupal_alter.
+      //drupal_alter('shortcode_info', $definitions);
+
+      $shortcodes = array(
+        'plugins' => $definitions,
+        'filters' => array(),
+      );
     }
 
-    return $shortcodes_enabled[$format->format];
+    // If filter is given, only return plugin definitions enabled on the filter.
+    if ($filter) {
+      $filter_id = $filter->getPluginId();
+      if (!isset($shortcodes['filters'][$filter_id])) {
+        $settings = $filter->settings;
+
+
+        $enabled_shortcodes = array();
+        foreach ($settings as $shortcode_id => $status) {
+          if ($status && isset($shortcodes['plugins'][$shortcode_id])) {
+            $enabled_shortcodes[$shortcode_id] = $shortcodes['plugins'][$shortcode_id];
+          }
+        }
+        $shortcodes['filters'][$filter_id] = $enabled_shortcodes;
+      }
+
+      return $shortcodes['filters'][$filter_id];
+    }
+
+    // Return all defined shortcode plugin definitions.
+    return $shortcodes['plugins'];
+
   }
 
   /**
-   * Implements simple tags cache.
+   * Creates shortcode plugin instance or loads from static cache.
+   *
+   * @param string $shortcode_id
+   *   The shortcode plugin id.
+   *
+   * @return \Drupal\shortcode\Plugin\ShortcodeInterface
+   *   The plugin instance.
    */
-  function getTags($tags = NULL) {
-    $shortcodes = &drupal_static(__FUNCTION__, array());
-    if ($tags) {
-      $shortcodes = $tags;
-      return TRUE;
-    }
+  function getShortcodePlugin($shortcode_id) {
+    $plugins = &drupal_static(__FUNCTION__, array());
+    if (!isset($plugins[$shortcode_id])) {
 
-    return $shortcodes;
+      /** @var \Drupal\shortcode\Shortcode\ShortcodePluginManager $type */
+      $type = \Drupal::service('plugin.manager.shortcode');
+
+      $plugins[$shortcode_id] = $type->createInstance($shortcode_id);
+    }
+    return $plugins[$shortcode_id];
   }
 
   /**
-   * Checking the given tag is valid Shortcode macro or not.
+   * Checking the given tag is valid Shortcode tag or not.
    *
    * @param string $tag
    *   The tag name.
    *
    * @return bool
-   *   Returns TRUE if the given $tag is valid macro.
+   *   Returns TRUE if the given $tag is valid shortcode tag.
    */
-  public function isTag($tag) {
-
-    $tags = $this->getTags();
-
-    // TODO: This is case-sensitive right now, make it insensitive later.
-    if (isset($tags[$tag])) {
-      return TRUE;
-    }
-
-    return FALSE;
+  public function isValidShortcodeTag($tag) {
+    $shortcodes = $this->getShortcodePlugins();
+    // TODO: This is case-sensitive right now, consider if it should be.
+    return isset($shortcodes[$tag]);
   }
-
 
   /**
    * Helper function to decide the given param is a bool value.
@@ -135,7 +134,6 @@ class ShortcodeService {
     return $res;
   }
 
-
   /**
    * Processes the Shortcodes according to the text and the text format.
    *
@@ -143,34 +141,14 @@ class ShortcodeService {
    *   The string containing shortcodes to be processed.
    * @param string $langcode
    *   The language code of the text to be filtered.
-   * @var $filter
+   * @var FilterInterface $filter
    *   The text filter.
    *
    * @return string
    *   The processed string.
    */
-  public function process($text, $langcode = Language::LANGCODE_NOT_SPECIFIED, $filter = NULL) {
-    $shortcodes = $this->listAll();
-
-    //$filterConfig = $filter->getConfiguration();
-
-    // TODO: Only process enabled shortcodes.
-    //$shortcodes_enabled = array();
-    //foreach ($filter->settings as $name => $value) {
-    //  if ($value && !empty($shortcodes[$name]['process callback'])) {
-    //    $shortcodes_enabled[$name] = array(
-    //      'function' => $shortcodes[$name]['process callback'],
-    //    );
-    //  }
-    //}
-    //if (empty($shortcodes_enabled)) {
-    //  return $text;
-    //}
-    // Assume all are enabled for now.
-    $shortcodes_enabled = $shortcodes;
-
-    // Save the ShortCodes in the local cache.
-    $this->getTags($shortcodes_enabled);
+  public function process($text, $langcode = Language::LANGCODE_NOT_SPECIFIED, FilterInterface $filter = NULL) {
+    $shortcodes = $this->getShortcodePlugins($filter);
 
     // Processing recursively, now embedding tags within other tags is supported!
     $chunks = preg_split('!(\[{1,2}.*?\]{1,2})!', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -208,12 +186,12 @@ class ShortcodeService {
         $tag = array_shift($ts);
         $tag = trim($tag, '/');
 
-        if (!$this->isTag($tag)) {
+        if (!$this->isValidShortcodeTag($tag)) {
           // This is not a valid shortcode tag, or the tag is not enabled.
           array_unshift($heap_index, '_string_');
           array_unshift($heap, $original_text);
         }
-        // This is a valid shortcode tag.
+        // This is a valid shortcode tag, and self-closing.
         elseif (substr($c, -1, 1) == '/') {
           // Processes a self closing tag, - it has "/" at the end-
           /*
@@ -234,7 +212,7 @@ class ShortcodeService {
             '',
           );
           array_unshift($heap_index, '_string_');
-          array_unshift($heap, $this->processTag($m));
+          array_unshift($heap, $this->processTag($m, $shortcodes));
         }
         // A closing tag, we can process the heap.
         elseif ($c[0] == '/') {
@@ -259,7 +237,7 @@ class ShortcodeService {
                 implode('', $process_heap),
                 '',
               );
-              $str = $this->processTag($m);
+              $str = $this->processTag($m, $shortcodes);
               array_unshift($heap_index, '_string_');
               array_unshift($heap, $str);
               $found = TRUE;
@@ -307,13 +285,13 @@ class ShortcodeService {
    *   Text to be processed.
    * @param string $langcode
    *   The language code of the text to be filtered.
-   * @param FilterBase $filter
+   * @param FilterInterface $filter
    *   The filter plugin that triggered this process.
    *
    * @return string
    *   The processed string.
    */
-  public function postprocessText($text, $langcode, FilterBase $filter = NULL) {
+  public function postprocessText($text, $langcode, FilterInterface $filter = NULL) {
 
     //preg_match_all('/<p>s.*<!--.*-->.*<div/isU', $text, $r);
     //dpm($r, '$r');
@@ -346,78 +324,51 @@ class ShortcodeService {
    * @param array $m
    *   Regular expression match array.
    *
-   * @return mixed
-   *   False on failure.
+   *     0 - the full tag text?
+   *     1/5 - An extra [ or ] to allow for escaping shortcodes with double [[]]
+   *     2 - The Shortcode name
+   *     3 - The Shortcode argument list
+   *     4 - The content of a Shortcode when it wraps some content.
+   *
+   * @param array $enabled_shortcodes
+   *   Array of enabled shortcodes for the active text format.
+   *
+   * @return string|FALSE
+   *   FALSE on failure.
    */
-  protected function processTag($m) {
+  protected function processTag($m, $enabled_shortcodes) {
+    $shortcode_id = $m[2];
+    $shortcode = NULL;
 
-    // Get tags from the static cache.
-    $shortcodes = $this->getTags();
+    if (isset($enabled_shortcodes[$shortcode_id])){
+      $shortcode = $this->getShortcodePlugin($shortcode_id);
+    }
 
-    $tag = $m[2];
-
-    if (!empty($shortcodes[$tag])) {
-      // Process if tag exists (enabled).
+    // Process if shortcode exists and enabled.
+    if ($shortcode) {
       $attr = $this->parseAttrs($m[3]);
-      /*
-      * 0 - the full tag text?
-      * 1/5 - An extra [ or ] to allow for escaping shortcodes with double [[]]
-      * 2 - The Shortcode name
-      * 3 - The Shortcode argument list
-      * 4 - The content of a Shortcode when it wraps some content.
-      * */
 
+      // This is an enclosing tag, means extra parameter is present.
       if (!is_null($m[4])) {
-        // This is an enclosing tag, means extra parameter is present.
-
-        // Drupal 7 way:
-        //if (is_string($shortcodes[$tag]['function']) && function_exists($shortcodes[$tag]['function'])) {
-        //  return $m[1] . call_user_func($shortcodes[$tag]['function'], $attr, $m[4], $m[2]) . $m[5];
-        //}
-
-        // Drupal 8 way:
-        $plugin_id = $tag;
-
-        /** @var \Drupal\shortcode\Shortcode\ShortcodePluginManager $type */
-        $type = \Drupal::service('plugin.manager.shortcode');
-
-        /** @var \Drupal\shortcode\Plugin\Shortcode\HighlightShortcode $shortcode */
-        $shortcode_info = $type->getDefinition($plugin_id, FALSE);
-        if ($shortcode_info) {
-          $shortcode = $type->createInstance($plugin_id);
-          return $m[1] . $shortcode->process($attr, $m[4]) . $m[5];
-        }
-
-        return $m[1] . $m[5];
+        return $m[1] . $shortcode->process($attr, $m[4]) . $m[5];
       }
+      // This is a self-closing tag.
       else {
-        // This is a self-closing tag.
+        return $m[1] . $shortcode->process($attr, NULL) . $m[5];
+      }
+    }
+    // Shortcode does not exist or is not enabled.
+    else {
 
-        // Drupal 7 way:
-        //if (is_string($shortcodes[$tag]['function']) && function_exists($shortcodes[$tag]['function'])) {
-        //  return $m[1] . call_user_func($shortcodes[$tag]['function'], $attr, NULL, $m[2]) . $m[5];
-        //}
-
-        // Drupal 8 way:
-        $plugin_id = $tag;
-
-        /** @var \Drupal\shortcode\Shortcode\ShortcodePluginManager $type */
-        $type = \Drupal::service('plugin.manager.shortcode');
-
-        /** @var \Drupal\shortcode\Plugin\Shortcode\HighlightShortcode $shortcode */
-        $shortcode_info = $type->getDefinition($plugin_id, FALSE);
-        if ($shortcode_info) {
-          $shortcode = $type->createInstance($plugin_id);
-          return $m[1] . $shortcode->process($attr, NULL) . $m[5];
-        }
-
+      // This is an enclosing tag, means extra parameter is present.
+      if (!is_null($m[4])) {
+        return $m[1] . $m[4] . $m[5];
+      }
+      // This is a self-closing tag.
+      else{
         return $m[1] . $m[5];
       }
     }
-    elseif (is_null($m[4])) {
-      return $m[4];
-    }
-    return '';
   }
 
   /**

@@ -7,6 +7,7 @@
 
 namespace Drupal\shortcode\Plugin;
 
+use Drupal\Core\Language\Language;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -58,12 +59,13 @@ interface ShortcodeInterface extends ConfigurablePluginInterface, PluginInspecti
    * @param string $text
    *   The text string to be processed.
    * @param string $langcode
-   *   The language code of the text to be filtered.
+   *   The language code of the text to be filtered. Defaults to
+   *   LANGCODE_NOT_SPECIFIED.
    *
    * @return string
    *   The processed text.
    */
-  public function process($attributes, $text, $langcode);
+  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED);
 
   /**
    * Generates a filter's tip.
