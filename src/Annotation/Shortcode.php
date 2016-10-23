@@ -23,9 +23,20 @@ class Shortcode extends Plugin {
   /**
    * The plugin ID.
    *
+   * This is used in the backend to identify shortcodes, not used for parsing.
+   *
    * @var string
    */
   public $id;
+
+  /**
+   * The shortcode token.
+   *
+   * This is used to parse the shortcode. If not defined, defaults to $id.
+   *
+   * @var string
+   */
+  public $token;
 
   /**
    * The name of the provider that owns the shortcode.
@@ -59,7 +70,14 @@ class Shortcode extends Plugin {
    *
    * @var bool (optional)
    */
-  public $status = FALSE;
+  public $status = TRUE;
+
+  /**
+   * Weight of this shortcode. Shortcodes with lower weights are processed first.
+   *
+   * @var bool (optional)
+   */
+  public $weight = 99;
 
   /**
    * The default settings for the shortcode.

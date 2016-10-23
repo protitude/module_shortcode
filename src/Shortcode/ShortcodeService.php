@@ -9,6 +9,65 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 class ShortcodeService {
 
   /**
+   * Returns preprocessed shortcode plugin definitions.
+   *
+   * @return array
+   *   Array of shortcode plugin definitions.
+   */
+  function loadShortcodePlugins() {
+
+    /** @var PluginManagerInterface $type */
+    $type = \Drupal::service('plugin.manager.shortcode');
+    $definitions_raw = $type->getDefinitions();
+
+    $definitions = array();
+    foreach ($definitions_raw as $shortcode_id => $definition) {
+
+      // Default weight to 99.
+      if (!isset($definition['weight'])) {
+        $definition['weight'] = 99;
+      }
+
+      // Default token to id.
+      $token = strtolower(isset($definition['token']) ? $definition['token'] : $shortcode_id);
+      $definition['token'] = $token;
+
+      $definitions[$shortcode_id] = $definition;
+    }
+
+    return $definitions;
+  }
+
+  /**
+   * Returns array of shortcode plugin definitions enabled for the filter.
+   *
+   * @param FilterInterface $filter
+   *   The filter. Defaults to NULL, where all shortcode plugins will be
+   *   returned.
+   *
+   * @param bool $reset
+   *   TRUE if the static cache should be reset. Defaults to FALSE.
+   *
+   * @return array
+   *   Array of shortcode plugin definitions.
+   */
+  function getShortcodePluginTokens($reset = FALSE) {
+    $shortcode_tokens = &drupal_static(__FUNCTION__);
+
+    // Prime plugin cache.
+    if (!isset($shortcode_tokens) || $reset) {
+      $shortcodes = $this->loadShortcodePlugins();
+      $tokens = array();
+      foreach ($shortcodes as $shortcode) {
+        $tokens[$shortcode['token']] = $shortcode['token'];
+      }
+      $shortcode_tokens = $tokens;
+    }
+
+    return $shortcode_tokens;
+  }
+
+  /**
    * Returns array of shortcode plugin definitions enabled for the filter.
    *
    * @param FilterInterface $filter
@@ -24,48 +83,53 @@ class ShortcodeService {
   function getShortcodePlugins(FilterInterface $filter = NULL, $reset = FALSE) {
     $shortcodes = &drupal_static(__FUNCTION__);
 
+    // Prime plugin cache.
     if (!isset($shortcodes) || $reset) {
-      /** @var PluginManagerInterface $type */
-      $type = \Drupal::service('plugin.manager.shortcode');
 
-      $definitions_raw = $type->getDefinitions();
+      $shortcodes_by_id = $this->loadShortcodePlugins();
+
+      // Sorting plugins by weight using uasort() costs quite a bit more than what we're doing below.
       $definitions = array();
-      foreach ($definitions_raw as $definition) {
-        $definitions[$definition['id']] = $definition;
+      foreach ($shortcodes_by_id as $shortcode) {
+        $token = $shortcode['token'];
+        // Only replace the definition if weight is smaller.
+        if (!isset($definitions[$token]) || ($definitions[$token]['weight'] < $shortcode['weight'])) {
+          $definitions[$token] = $shortcode;
+        }
       }
 
-      // Alteration of the ShortCode plugin definitions should utilize
-      // plugin manager's $alterHook, instead of D7's drupal_alter.
-      //drupal_alter('shortcode_info', $definitions);
-
       $shortcodes = array(
-        'plugins' => $definitions,
-        'filters' => array(),
+        'all' => $shortcodes_by_id,
+        'default' => $definitions,
       );
     }
 
     // If filter is given, only return plugin definitions enabled on the filter.
     if ($filter) {
       $filter_id = $filter->getPluginId();
-      if (!isset($shortcodes['filters'][$filter_id])) {
+      if (!isset($shortcodes[$filter_id])) {
         $settings = $filter->settings;
 
-
+        $shortcodes_by_id = $shortcodes['all'];
         $enabled_shortcodes = array();
-        foreach ($settings as $shortcode_id => $status) {
-          if ($status && isset($shortcodes['plugins'][$shortcode_id])) {
-            $enabled_shortcodes[$shortcode_id] = $shortcodes['plugins'][$shortcode_id];
+        foreach ($shortcodes_by_id as $shortcode_id => $shortcode) {
+          if ($settings[$shortcode_id]) {
+            $token = $shortcode['token'];
+            // Only replace the definition if weight is smaller.
+            if (!isset($enabled_shortcodes[$token]) || ($enabled_shortcodes[$token]['weight'] < $shortcode['weight'])) {
+              $enabled_shortcodes[$token] = $shortcode;
+            }
           }
         }
-        $shortcodes['filters'][$filter_id] = $enabled_shortcodes;
+
+        $shortcodes[$filter_id] = $enabled_shortcodes;
       }
 
-      return $shortcodes['filters'][$filter_id];
+      return $shortcodes[$filter_id];
     }
 
-    // Return all defined shortcode plugin definitions.
-    return $shortcodes['plugins'];
-
+    // Return all defined shortcode plugin definitions keyed by token.
+    return $shortcodes['default'];
   }
 
   /**
@@ -99,9 +163,9 @@ class ShortcodeService {
    *   Returns TRUE if the given $tag is valid shortcode tag.
    */
   public function isValidShortcodeTag($tag) {
-    $shortcodes = $this->getShortcodePlugins();
+    $tokens = $this->getShortcodePluginTokens();
     // TODO: This is case-sensitive right now, consider if it should be.
-    return isset($shortcodes[$tag]);
+    return isset($tokens[$tag]);
   }
 
   /**
@@ -333,29 +397,16 @@ class ShortcodeService {
    *   FALSE on failure.
    */
   protected function processTag($m, $enabled_shortcodes) {
-    $shortcode_id = $m[2];
-    $shortcode = NULL;
+    $shortcode_token = $m[2];
 
-    if (isset($enabled_shortcodes[$shortcode_id])){
+    $shortcode = NULL;
+    if (isset($enabled_shortcodes[$shortcode_token])){
+      $shortcode_id = $enabled_shortcodes[$shortcode_token]['id'];
       $shortcode = $this->getShortcodePlugin($shortcode_id);
     }
 
-    // Process if shortcode exists and enabled.
-    if ($shortcode) {
-      $attr = $this->parseAttrs($m[3]);
-
-      // This is an enclosing tag, means extra parameter is present.
-      if (!is_null($m[4])) {
-        return $m[1] . $shortcode->process($attr, $m[4]) . $m[5];
-      }
-      // This is a self-closing tag.
-      else {
-        return $m[1] . $shortcode->process($attr, NULL) . $m[5];
-      }
-    }
-    // Shortcode does not exist or is not enabled.
-    else {
-
+    // If shortcode does not exist or is not enabled, return input sans tokens.
+    if (empty($shortcode)) {
       // This is an enclosing tag, means extra parameter is present.
       if (!is_null($m[4])) {
         return $m[1] . $m[4] . $m[5];
@@ -365,6 +416,10 @@ class ShortcodeService {
         return $m[1] . $m[5];
       }
     }
+
+    // Process if shortcode exists and enabled.
+    $attr = $this->parseAttrs($m[3]);
+    return $m[1] . $shortcode->process($attr, $m[4]) . $m[5];
   }
 
   /**

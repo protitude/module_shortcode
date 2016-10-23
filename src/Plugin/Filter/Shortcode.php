@@ -26,50 +26,47 @@ class Shortcode extends FilterBase {
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
 
-    $settings = array();
-    //$this->settings += $defaults;
-
     /** @var \Drupal\shortcode\Shortcode\ShortcodeService $shortcodeService */
     $shortcodeService = \Drupal::service('shortcode');
-    $shortcodes = $shortcodeService->getShortcodePlugins();
+    $shortcodes = $shortcodeService->loadShortcodePlugins();
 
-    /** @var \Drupal\Core\Plugin\DefaultPluginManager $type */
-    $type = \Drupal::service('plugin.manager.shortcode');
+    $shortcodes_by_provider = array();
 
-    /** @var ShortcodeInterface $shortcode */
-    foreach ($shortcodes as $plugin_id => $shortcode_info) {
-
-      $shortcode = $type->createInstance($plugin_id);
-
-      $description = $shortcode->getDescription();
-
-      $settings[$plugin_id] = array(
-        '#type' => 'checkbox',
-        '#title' => $this->t('Enable %name shortcode', array('%name' => $shortcode->getLabel())),
-        '#default_value' => NULL,
-        '#description' => isset($description) ? $description : $this->t('Enable or disable this shortcode in this input format'),
-      );
-
-      if (!empty($this->settings[$plugin_id])) {
-        $settings[$plugin_id]['#default_value'] = $this->settings[$plugin_id];
+    // Group shortcodes by provider.
+    foreach ($shortcodes as $shortcode_id => $shortcode_info) {
+      $provider_id = $shortcode_info['provider'];
+      if (!isset($shortcodes_by_provider[$provider_id])) {
+        $shortcodes_by_provider[$provider_id] = array();
       }
-      //elseif (!empty($defaults[$plugin_id])) {
-      //  $settings[$key]['#default_value'] = $defaults[$plugin_id];
-      //}
+      $shortcodes_by_provider[$provider_id][$shortcode_id] = $shortcode_info;
     }
 
-    return $settings;
+    // Generate form elements.
+    $settings = array();
+    foreach ($shortcodes_by_provider as $provider_id => $shortcodes) {
 
-//
-//    $form['shortcode'] = array(
-//      '#type' => 'number',
-//      '#title' => $this->t('Maximum link text length'),
-//      '#default_value' => $this->settings['filter_url_length'],
-//      '#min' => 1,
-//      '#field_suffix' => $this->t('characters'),
-//      '#description' => $this->t('URLs longer than this number of characters will be truncated to prevent long strings that break formatting. The link itself will be retained; just the text portion of the link will be truncated.'),
-//    );
-//    return $form;
+      // Add section header.
+      $settings['header-'.$provider_id] = array(
+        '#markup' => '<b class="shortcodeSectionHeader">Shortcodes provided by ' . $provider_id . '</b>',
+      );
+
+      // Sort definitions by weight property.
+      $sorted_shortcodes = $shortcodes;
+      uasort($sorted_shortcodes, function($a, $b) {
+        return $b['weight'] - $a['weight'];
+      });
+
+      /** @var ShortcodeInterface $shortcode */
+      foreach ($sorted_shortcodes as $shortcode_id => $shortcode_info) {
+        $settings[$shortcode_id] = array(
+          '#type' => 'checkbox',
+          '#title' => $this->t('Enable %name shortcode', array('%name' => $shortcode_info['title'])),
+          '#default_value' => isset($this->settings[$shortcode_id]) ? $this->settings[$shortcode_id] : TRUE,
+          '#description' => isset($shortcode_info['description']) ? $shortcode_info['description'] : $this->t('Enable or disable this shortcode in this input format'),
+        );
+      }
+    }
+    return $settings;
   }
 
   /**
