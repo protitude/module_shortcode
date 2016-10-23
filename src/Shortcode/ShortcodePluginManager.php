@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Shortcode\ShortcodePluginManager
- */
 
 namespace Drupal\shortcode\Shortcode;
 

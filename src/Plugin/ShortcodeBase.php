@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\ShortcodeBase.
- */
-
 namespace Drupal\shortcode\Plugin;
 
 use Drupal\Core\Form\FormStateInterface;

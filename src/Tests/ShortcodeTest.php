@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\Tests\shortcode\WebTest\ShortcodeTest.
- */
 
 namespace Drupal\shortcode\Tests;
 

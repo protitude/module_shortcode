@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\shortcode\Annotation\Shortcode.
- */
-
 namespace Drupal\shortcode\Annotation;
 
 use Drupal\Component\Annotation\Plugin;

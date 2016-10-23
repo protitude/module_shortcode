@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\filter\Plugin\FilterInterface.
- */
-
 namespace Drupal\shortcode\Plugin;
 
 use Drupal\Core\Language\Language;

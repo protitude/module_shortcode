@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\insert_view\Plugin\Filter\Shortcode.
- */
 
 namespace Drupal\shortcode\Plugin\Filter;
 
