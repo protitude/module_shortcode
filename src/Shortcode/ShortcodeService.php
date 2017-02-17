@@ -113,7 +113,7 @@ class ShortcodeService {
         $shortcodes_by_id = $shortcodes['all'];
         $enabled_shortcodes = array();
         foreach ($shortcodes_by_id as $shortcode_id => $shortcode) {
-          if ($settings[$shortcode_id]) {
+          if (isset($settings[$shortcode_id]) && $settings[$shortcode_id]) {
             $token = $shortcode['token'];
             // Only replace the definition if weight is smaller.
             if (!isset($enabled_shortcodes[$token]) || ($enabled_shortcodes[$token]['weight'] < $shortcode['weight'])) {
