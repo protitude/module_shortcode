@@ -87,19 +87,18 @@ class Shortcode extends FilterBase {
    */
   public function tips($long = FALSE) {
 
-    // Get enabled shortcodes for a specific text format.
-
     /** @var \Drupal\shortcode\Shortcode\ShortcodeService $type */
     $type = \Drupal::service('shortcode');
-    $shortcodes = $type->getShortcodePlugins($this);
 
-    // Gather tips defined in all enabled plugins.
-    $tips = array();
+    // Get enabled shortcodes for this text format.
+    $shortcodes = $type->getShortcodePlugins($this);
 
     /** @var \Drupal\shortcode\Shortcode\ShortcodePluginManager $type */
     $type = \Drupal::service('plugin.manager.shortcode');
 
-    foreach ($shortcodes as $plugin_id => $shortcode_info) {
+    // Gather tips defined in all enabled plugins.
+    $tips = array();
+    foreach ($shortcodes as $shortcode_info) {
       /** @var \Drupal\shortcode\Plugin\ShortcodeInterface $shortcode */
       $shortcode = $type->createInstance($shortcode_info['id']);
       $tips[] = $shortcode->tips($long);
@@ -112,4 +111,3 @@ class Shortcode extends FilterBase {
     return '<p>You can use wp-like shortcodes such as: </p><ul>' . $output . '</ul>';
   }
 }
-
