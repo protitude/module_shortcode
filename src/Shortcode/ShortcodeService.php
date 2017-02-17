@@ -78,7 +78,7 @@ class ShortcodeService {
    *   TRUE if the static cache should be reset. Defaults to FALSE.
    *
    * @return array
-   *   Array of shortcode plugin definitions.
+   *   Array of shortcode plugin definitions, keyed by token, not id.
    */
   function getShortcodePlugins(FilterInterface $filter = NULL, $reset = FALSE) {
     $shortcodes = &drupal_static(__FUNCTION__);
