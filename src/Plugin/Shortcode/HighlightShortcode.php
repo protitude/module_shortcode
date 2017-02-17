@@ -42,10 +42,10 @@ class HighlightShortcode extends ShortcodeBase {
    */
   public function tips($long = FALSE) {
     $output = array();
-    $output[] = '<p><strong>' . t('[highlight (class="additional class")]text[/highlight]') . '</strong> ';
+    $output[] = '<p><strong>' . $this->t('[highlight (class="additional class")]text[/highlight]') . '</strong> ';
     if ($long) {
-      $output[] = t('Inserts span.highlight around the text.') . '</p>';
-      $output[] = '<p>' . t('Sample css:') . '</p>';
+      $output[] = $this->t('Inserts span.highlight around the text.') . '</p>';
+      $output[] = '<p>' . $this->t('Sample css:') . '</p>';
       $output[] = '
       <code>
         span.highlight{
@@ -57,7 +57,7 @@ class HighlightShortcode extends ShortcodeBase {
       </code><p></p>';
     }
     else {
-      $output[] = t('Inserts span.highlight around the text. Additional class names can be added by the <em>class</em> parameter.') . '</p>';
+      $output[] = $this->t('Inserts span.highlight around the text. Additional class names can be added by the <em>class</em> parameter.') . '</p>';
     }
 
     return implode(' ', $output);

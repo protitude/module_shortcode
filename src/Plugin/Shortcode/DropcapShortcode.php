@@ -49,10 +49,10 @@ class DropcapShortcode extends ShortcodeBase {
    */
   public function tips($long = FALSE) {
     $output = array();
-    $output[] = '<p><strong>' . t('[dropcap (class="additional class")]text[/dropcap]') . '</strong> ';
+    $output[] = '<p><strong>' . $this->t('[dropcap (class="additional class")]text[/dropcap]') . '</strong> ';
     if ($long) {
-      $output[] = t('Makes dropcap from the text.') . '</p>';
-      $output[] = '<p>' . t('Sample css:') . '</p>';
+      $output[] = $this->t('Makes dropcap from the text.') . '</p>';
+      $output[] = '<p>' . $this->t('Sample css:') . '</p>';
       $output[] = '<code>
         .dropcap {
           display:block;
@@ -65,7 +65,7 @@ class DropcapShortcode extends ShortcodeBase {
         </code><p></p>';
     }
     else {
-      $output[] = t('Makes dropcap from the text. Additional class names can be added by the <em>class</em> parameter.') . '</p>';
+      $output[] = $this->t('Makes dropcap from the text. Additional class names can be added by the <em>class</em> parameter.') . '</p>';
     }
 
     return implode(' ', $output);

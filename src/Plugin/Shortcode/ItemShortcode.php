@@ -74,13 +74,13 @@ class ItemShortcode extends ShortcodeBase {
    */
   public function tips($long = FALSE) {
     $output = array();
-    $output[] = '<p><strong>' . t('[item (class="additional class"|id=item id|type=div,d,span,s)]text[/item]') . '</strong> ';
+    $output[] = '<p><strong>' . $this->t('[item (class="additional class"|id=item id|type=div,d,span,s)]text[/item]') . '</strong> ';
     if ($long) {
-      $output[] = t('Inserts an html item (type parameter = div or span) around the given text.') . '</p>';
-      $output[] = '<p>' . t('Additional class names can be added by the <em>class</em> parameter. The id parameter gives the html an unique css id.') . '</p>';
+      $output[] = $this->t('Inserts an html item (type parameter = div or span) around the given text.') . '</p>';
+      $output[] = '<p>' . $this->t('Additional class names can be added by the <em>class</em> parameter. The id parameter gives the html an unique css id.') . '</p>';
     }
     else {
-      $output[] = t('Inserts an html item (div or span) around the given text.') . '</p>';
+      $output[] = $this->t('Inserts an html item (div or span) around the given text.') . '</p>';
     }
 
     return implode(' ', $output);

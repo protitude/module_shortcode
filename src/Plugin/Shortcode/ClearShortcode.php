@@ -77,13 +77,13 @@ class ClearShortcode extends ShortcodeBase {
    */
   public function tips($long = FALSE) {
     $output = array();
-    $output[] = '<p><strong>' . t('[clear (class="additional class"|id=item id|type=div,d,span,s)]text[/clear]') . '</strong>';
+    $output[] = '<p><strong>' . $this->t('[clear (class="additional class"|id=item id|type=div,d,span,s)]text[/clear]') . '</strong>';
     if ($long) {
-      $output[] = t('Inserts a float-clearing html item (type parameter = div or span) around the given text. Use the simple [clear /].') . '</p>';
+      $output[] = $this->t('Inserts a float-clearing html item (type parameter = div or span) around the given text. Use the simple [clear /].') . '</p>';
       $output[] = '<p>' . t('Additional class names can be added by the <em>class</em> parameter. The id parameter gives the html an unique css id.') . '</p>';
     }
     else {
-      $output[] = t('Inserts a float-clearing html item (div or span) around the given text. Use the simple [clear /].') . '</p>';
+      $output[] = $this->t('Inserts a float-clearing html item (div or span) around the given text. Use the simple [clear /].') . '</p>';
     }
 
     return implode(' ', $output);

@@ -50,7 +50,7 @@ class RandomShortcode extends ShortcodeBase {
   public function tips($long = FALSE) {
     $output = array();
     $output[] = '<p><strong>[random (length="8") /]</strong>';
-    $output[] = t('Inserts a random text with the given length.') . '</p>';
+    $output[] = $this->t('Inserts a random text with the given length.') . '</p>';
     return implode(' ', $output);
   }
 

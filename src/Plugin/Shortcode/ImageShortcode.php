@@ -51,8 +51,8 @@ class ImageShortcode extends ShortcodeBase {
    */
   public function tips($long = FALSE) {
     $output = array();
-    $output[] = '<p><strong>' . t('[img scr="image.jpg" (class="additional class"|alt="alt text")/]') . '</strong> ';
-    $output[] = t('Inserts an image based on the given image url.') . '</p>';
+    $output[] = '<p><strong>' . $this->t('[img scr="image.jpg" (class="additional class"|alt="alt text")/]') . '</strong> ';
+    $output[] = $this->t('Inserts an image based on the given image url.') . '</p>';
     return implode(' ', $output);
   }
 }

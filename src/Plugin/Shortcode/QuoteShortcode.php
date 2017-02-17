@@ -49,10 +49,10 @@ class QuoteShortcode extends ShortcodeBase {
    */
   public function tips($long = FALSE) {
     $output = array();
-    $output[] = '<p><strong>' . t('[quote (class="additional class" | author="author name")]text[/quote]') . '</strong>';
+    $output[] = '<p><strong>' . $this->t('[quote (class="additional class" | author="author name")]text[/quote]') . '</strong>';
     if ($long) {
-      $output[] = t('Formats the text like as a quote.') . '</p>';
-      $output[] = '<p>' . t('Sample css:') . '</p>';
+      $output[] = $this->t('Formats the text like as a quote.') . '</p>';
+      $output[] = '<p>' . $this->t('Sample css:') . '</p>';
       $output[] = '
         <code>
           .quote {
@@ -78,7 +78,7 @@ class QuoteShortcode extends ShortcodeBase {
         </code><p></p>';
     }
     else {
-      $output[] = t('Formats the text like as a quote. Additional class names can be added by the <em>class</em> parameter.') . '</p>';
+      $output[] = $this->t('Formats the text like as a quote. Additional class names can be added by the <em>class</em> parameter.') . '</p>';
     }
 
     return implode(' ', $output);
