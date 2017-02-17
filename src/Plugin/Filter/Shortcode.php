@@ -101,7 +101,7 @@ class Shortcode extends FilterBase {
 
     foreach ($shortcodes as $plugin_id => $shortcode_info) {
       /** @var \Drupal\shortcode\Plugin\ShortcodeInterface $shortcode */
-      $shortcode = $type->createInstance($plugin_id);
+      $shortcode = $type->createInstance($shortcode_info['id']);
       $tips[] = $shortcode->tips($long);
     }
 
