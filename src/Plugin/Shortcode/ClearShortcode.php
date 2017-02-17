@@ -80,7 +80,7 @@ class ClearShortcode extends ShortcodeBase {
     $output[] = '<p><strong>' . $this->t('[clear (class="additional class"|id=item id|type=div,d,span,s)]text[/clear]') . '</strong>';
     if ($long) {
       $output[] = $this->t('Inserts a float-clearing html item (type parameter = div or span) around the given text. Use the simple [clear /].') . '</p>';
-      $output[] = '<p>' . t('Additional class names can be added by the <em>class</em> parameter. The id parameter gives the html an unique css id.') . '</p>';
+      $output[] = '<p>' . $this->t('Additional class names can be added by the <em>class</em> parameter. The id parameter gives the html an unique css id.') . '</p>';
     }
     else {
       $output[] = $this->t('Inserts a float-clearing html item (div or span) around the given text. Use the simple [clear /].') . '</p>';
