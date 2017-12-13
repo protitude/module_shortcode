@@ -5,14 +5,13 @@ namespace Drupal\shortcode\Plugin;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Render\Renderer;
-use Drupal\Core\Url;
 use Drupal\Component\Utility\Html;
 
 /**
  * Provides a base class for Shortcode plugins.
  *
  * @see \Drupal\filter\Annotation\Filter
- * @see \Drupal\shortcode\ShortcodePluginManager
+ * @see \Drupal\shortcode\Shortcode\ShortcodePluginManager
  * @see \Drupal\shortcode\Plugin\ShortcodeInterface
  * @see plugin_api
  */
@@ -176,7 +175,6 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    *
    * @param mixed|string|array $classes
    *   The classes string or array.
-   *
    * @param string $new_class
    *   The class to add.
    *
@@ -184,16 +182,14 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    *   The proper classes string.
    */
   public function addClass($classes = '', $new_class = '') {
-    if ($classes) {
-      if (!is_array($classes)) {
-        $classes = explode(' ', $classes);
-      }
-      array_unshift($classes, $new_class);
-      $classes = array_unique($classes);
+    if (!is_array($classes)) {
+      $classes = explode(' ', Html::escape($classes));
     }
-    else {
-      $classes[] = $new_class;
-    }
+
+    $classes = (array) $classes;
+    $classes[] = Html::escape($new_class);
+    $classes = array_unique($classes);
+
     return implode(' ', $classes);
   }
 
@@ -221,8 +217,6 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
     else {
       $path = '/' . ltrim($path, '/');
     }
-
-    //$path = Url::fromUserInput($path);
 
     /** @var \Drupal\Core\Path\AliasManager $alias_manager */
     $alias_manager = \Drupal::service('path.alias_manager');
