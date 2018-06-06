@@ -30,11 +30,28 @@ class ImageShortcode extends ShortcodeBase {
       'class' => '',
       'alt' => '',
       'src' => '',
+      'mid' => '',
+      'imagestyle' => ''
     ),
       $attributes
     );
 
     $class = $this->addClass($attributes['class'], 'img');
+
+    if ($attributes['mid']) {
+      $properties = $this->getImageProperties($attributes['mid']);
+      if ($properties['path']) {
+        if ($attributes['imagestyle']) {
+          $attributes['src'] = \Drupal\image\Entity\ImageStyle::load($attributes['imagestyle'])->buildUrl($properties['path']);
+        }
+        else {
+          $attributes['src'] = file_create_url($properties['path']);
+        }
+      }
+      if ($properties['alt'] && !$attributes['alt']) {
+        $attributes['alt'] = $properties['alt'];
+      }
+    }
 
     $output = array(
       '#theme' => 'shortcode_img',
@@ -51,8 +68,8 @@ class ImageShortcode extends ShortcodeBase {
    */
   public function tips($long = FALSE) {
     $output = array();
-    $output[] = '<p><strong>' . $this->t('[img scr="image.jpg" (class="additional class"|alt="alt text")/]') . '</strong> ';
-    $output[] = $this->t('Inserts an image based on the given image url.') . '</p>';
+    $output[] = '<p><strong>' . $this->t('[img (src="image.jpg"|mid="1") (class="additional class"|alt="alt text"|imagestyle="medium")/]') . '</strong> ';
+    $output[] = $this->t('Inserts an image based on the given image url or media id. If media id is supplied with no alt text, the alt text from the media object will be applied.') . '</p>';
     return implode(' ', $output);
   }
 }

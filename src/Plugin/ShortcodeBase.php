@@ -228,6 +228,36 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
   }
 
   /**
+   * Returns the file entity for a given image media entity id.
+   *
+   * @param  integer $mid
+   *   Media entity id.
+   *
+   * @return array
+   *   File properties: `alt` and `path` where available.
+   */
+  public function getImageProperties($mid) {
+    $properties = array(
+      'alt' => '',
+      'path' => ''
+    );
+    if (intval($mid)) {
+      $media_entity = \Drupal\media\Entity\Media::load($mid);
+    }
+    if ($media_entity) {
+      $field_media_image = $media_entity->get('field_media_image');
+    }
+    if ($field_media_image) {
+      $properties['alt'] = $field_media_image->alt;
+      $file = $field_media_image->entity;
+    }
+    if ( $file ) {
+      $properties['path'] = $file->getFileUri();
+    }
+    return $properties;
+  }
+
+  /**
    * Returns a suitable title string given the user provided title and test.
    *
    * @param string $title
