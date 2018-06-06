@@ -182,11 +182,13 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    *   The proper classes string.
    */
   public function addClass($classes = '', $new_class = '') {
-    if (!is_array($classes)) {
+    if (empty($classes)) {
+      $classes = [];
+    }
+    else if (!is_array($classes)) {
       $classes = explode(' ', Html::escape($classes));
     }
 
-    $classes = (array) $classes;
     $classes[] = Html::escape($new_class);
     $classes = array_unique($classes);
 

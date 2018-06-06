@@ -56,12 +56,12 @@ class ShortcodeTest extends WebTestBase {
       ),
       array(
         'input' => '[button path="<front>" class="custom-class"]Label[/button]',
-        'output' => '<a href="/" class="button custom-class" title="Label"><span>Label</span></a>',
+        'output' => '<a href="/" class="custom-class button" title="Label"><span>Label</span></a>',
         'message' => 'Button shortcode with custom class output matches.',
       ),
       array(
         'input' => '[button path="http://www.google.com" class="custom-class" title="Title" id="theLabel" style="border-radius:5px;"]Label[/button]',
-        'output' => '<a href="/http://www.google.com" class="button custom-class" id="theLabel" style="border-radius:5px;" title="Title"><span>Label</span></a>',
+        'output' => '<a href="/http://www.google.com" class="custom-class button" id="theLabel" style="border-radius:5px;" title="Title"><span>Label</span></a>',
         'message' => 'Button shortcode with custom attributes and absolute output matches.',
       ),
     );
@@ -100,7 +100,7 @@ class ShortcodeTest extends WebTestBase {
       ),
       array(
         'input' => '[clear type="d" class="custom-class" id="theLabel" style="background-color: #F00;"]<div>Other elements</div>[/clear]',
-        'output' => '<div class="clearfix custom-class" id="theLabel" style="background-color: #F00;"><div>Other elements</div></div>',
+        'output' => '<div class="custom-class clearfix" id="theLabel" style="background-color: #F00;"><div>Other elements</div></div>',
         'message' => 'Clear shortcode with custom attributes output matches.',
       ),
     );
@@ -124,7 +124,7 @@ class ShortcodeTest extends WebTestBase {
       ),
       array(
         'input' => '[dropcap class="custom-class"]text[/dropcap]',
-        'output' => '<span class="dropcap custom-class">text</span>',
+        'output' => '<span class="custom-class dropcap">text</span>',
         'message' => 'Dropcap shortcode with custom class output matches.',
       ),
     );
@@ -146,7 +146,7 @@ class ShortcodeTest extends WebTestBase {
     $this->assertEqual($output, $expected_output, 'Highlight shortcode output matches.');
 
     $test_input = '[highlight class="custom-class"]highlighted text[/highlight]';
-    $expected_output = '<span class="highlight custom-class">highlighted text</span>';
+    $expected_output = '<span class="custom-class highlight">highlighted text</span>';
     $output = $this->shortcodeService->process($test_input);
     $this->assertEqual($output, $expected_output, 'Highlight shortcode with custom class output matches.');
   }
@@ -164,7 +164,7 @@ class ShortcodeTest extends WebTestBase {
       ),
       array(
         'input' => '[img src="/abc.jpg" class="custom-class" alt="Test image" /]',
-        'output' => '<img src="/abc.jpg" class="img custom-class" alt="Test image"/>',
+        'output' => '<img src="/abc.jpg" class="custom-class img" alt="Test image"/>',
         'message' => 'Image shortcode with custom class output matches.',
       ),
     );
@@ -257,12 +257,12 @@ class ShortcodeTest extends WebTestBase {
       ),
       array(
         'input' => '[quote class="test-quote"]This is by no one[/quote]',
-        'output' => '<span class="quote test-quote"> This is by no one </span>',
+        'output' => '<span class="test-quote quote"> This is by no one </span>',
         'message' => 'Quote shortcode with class output matches.',
       ),
       array(
         'input' => '[quote class="test-quote" author="ryan"]This is by ryan[/quote]',
-        'output' => '<span class="quote test-quote"> <span class="quote-author">ryan wrote: </span> This is by ryan </span>',
+        'output' => '<span class="test-quote quote"> <span class="quote-author">ryan wrote: </span> This is by ryan </span>',
         'message' => 'Quote shortcode with class and author output matches.',
       ),
     );
