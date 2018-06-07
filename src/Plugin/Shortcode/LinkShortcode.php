@@ -33,11 +33,15 @@ class LinkShortcode extends ShortcodeBase {
       'class' => '',
       'id' => '',
       'style' => '',
+      'media_file_url' => false
     ),
       $attributes
     );
 
-    $url = $this->getUrlFromPath($attributes['path'], $attributes['url']);
+    $url = $attributes['url'];
+    if (empty($url)) {
+      $url = $this->getUrlFromPath($attributes['path'], $attributes['media_file_url']);
+    }
 
     if ($text) {
       $title = $this->getTitleFromAttributes($attributes['title'], $text);

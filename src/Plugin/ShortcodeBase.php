@@ -203,18 +203,10 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    * If a path is supplied, an absolute url will be returned.
    * @param string $path
    *   The internal path to be translated.
-   * @param string $url
-   *   The url.
-   * @param bool $url_overrides_path
-   *   TRUE if $url should override $path.
+   * @param bool $media_file_url
+   *   TRUE If a media path is supplied, return the file url.
    */
-  public function getUrlFromPath($path, $url = NULL, $url_overrides_path = TRUE) {
-
-    if (!empty($url)) {
-      if ($url_overrides_path) {
-        return $url;
-      }
-    }
+  public function getUrlFromPath($path, $media_file_url = FALSE) {
 
     if ($path === '<front>') {
       $path = '/';
@@ -228,14 +220,67 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
     // Add a leading slash if not present.
     $path = '/' . ltrim($path, '/');
 
-    /** @var \Drupal\Core\Path\AliasManager $alias_manager */
-    $alias_manager = \Drupal::service('path.alias_manager');
-    $alias = $alias_manager->getAliasByPath($path);
+    if (!empty($media_file_url) && substr($path, 0, 6) === "/media") {
+      $mid = $this->getMidFromPath( $path );
+      if ($mid) {
+        return $this->getMediaFileUrl($mid);
+      }
+    }
+    else {
+      /** @var \Drupal\Core\Path\AliasManager $alias_manager */
+      $alias_manager = \Drupal::service('path.alias_manager');
+      $alias = $alias_manager->getAliasByPath($path);
+    }
 
     // Convert relative URL to absolute.
     $url = Url::fromUserInput($alias, array('absolute' => TRUE))->toString();
 
     return $url;
+  }
+
+  /**
+   * Extracts the media id from a 'media/x' system path.
+   *
+   * @param string $path
+   *   The internal path to be translated.
+   * @return mixed|integer|bool
+   *   The media id if found.
+   */
+  public function getMidFromPath( $path ) {
+    if (preg_match('/media\/(\d+)/', $path, $matches)) {
+      return $matches[1];
+    }
+    return false;
+  }
+
+  /**
+   * Get the file url for a media object.
+   *
+   * @param integer $mid
+   *   Media id.
+   * @return mixed|integer|bool
+   *   The media id if found.
+   */
+  public function getMediaFileUrl($mid) {
+    $media_entity = \Drupal\media\Entity\Media::load($mid);
+    $bundle = $media_entity->bundle();
+    if ($bundle === 'file') {
+      $field_media = $media_entity->get('field_media_file');
+    }
+    if ($bundle === 'image') {
+      $field_media = $media_entity->get('field_media_image');
+    }
+    if ($bundle === 'video') {
+      $field_media = $media_entity->get('field_media_video_file');
+    }
+    if ($bundle == 'audio') {
+      $field_media = $media_entity->get('field_media_audio_file');
+    }
+    if ($field_media) {
+      $file = $field_media->entity;
+      return file_create_url($file->getFileUri());
+    }
+    return false;
   }
 
   /**
