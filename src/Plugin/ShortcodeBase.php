@@ -5,7 +5,9 @@ namespace Drupal\shortcode\Plugin;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Render\Renderer;
+use Drupal\Core\Url;
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\UrlHelper;
 
 /**
  * Provides a base class for Shortcode plugins.
@@ -196,8 +198,9 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
   }
 
   /**
-   * Returns a url to be used in a link element given path and url.
+   * Returns a url to be used in a link element given path or url.
    *
+   * If a path is supplied, an absolute url will be returned.
    * @param string $path
    *   The internal path to be translated.
    * @param string $url
@@ -216,15 +219,23 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
     if ($path === '<front>') {
       $path = '/';
     }
-    else {
-      $path = '/' . ltrim($path, '/');
+
+    // Path validator. Return the path if an absolute url is detected.
+    if ( UrlHelper::isValid($path, true) ) {
+      return $path;
     }
+
+    // Add a leading slash if not present.
+    $path = '/' . ltrim($path, '/');
 
     /** @var \Drupal\Core\Path\AliasManager $alias_manager */
     $alias_manager = \Drupal::service('path.alias_manager');
     $alias = $alias_manager->getAliasByPath($path);
 
-    return $alias;
+    // Convert relative URL to absolute.
+    $url = Url::fromUserInput($alias, array('absolute' => TRUE))->toString();
+
+    return $url;
   }
 
   /**

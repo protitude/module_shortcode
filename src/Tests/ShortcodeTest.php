@@ -2,6 +2,7 @@
 
 namespace Drupal\shortcode\Tests;
 
+use Drupal\Core\Url;
 use Drupal\simpletest\WebTestBase;
 use Drupal\shortcode\Shortcode\ShortcodeService;
 
@@ -32,6 +33,7 @@ class ShortcodeTest extends WebTestBase {
   public function setUp() {
     parent::setUp();
     $this->shortcodeService = \Drupal::service('shortcode');
+    $this->siteUrl = Url::fromRoute('<front>', array(), array("absolute" => TRUE))->toString();
   }
 
   /**
@@ -51,17 +53,17 @@ class ShortcodeTest extends WebTestBase {
     $sets = array(
       array(
         'input' => '[button]Label[/button]',
-        'output' => '<a href="/" class="button" title="Label"><span>Label</span></a>',
+        'output' => '<a href="'.$this->siteUrl.'" class="button" title="Label"><span>Label</span></a>',
         'message' => 'Button shortcode output matches.',
       ),
       array(
         'input' => '[button path="<front>" class="custom-class"]Label[/button]',
-        'output' => '<a href="/" class="custom-class button" title="Label"><span>Label</span></a>',
+        'output' => '<a href="'.$this->siteUrl.'" class="custom-class button" title="Label"><span>Label</span></a>',
         'message' => 'Button shortcode with custom class output matches.',
       ),
       array(
         'input' => '[button path="http://www.google.com" class="custom-class" title="Title" id="theLabel" style="border-radius:5px;"]Label[/button]',
-        'output' => '<a href="/http://www.google.com" class="custom-class button" id="theLabel" style="border-radius:5px;" title="Title"><span>Label</span></a>',
+        'output' => '<a href="http://www.google.com" class="custom-class button" id="theLabel" style="border-radius:5px;" title="Title"><span>Label</span></a>',
         'message' => 'Button shortcode with custom attributes and absolute output matches.',
       ),
     );
@@ -218,12 +220,12 @@ class ShortcodeTest extends WebTestBase {
     $sets = array(
       array(
         'input' => '[link path="node/1"]Label[/link]',
-        'output' => '<a href="/node/1" title="Label">Label</a>',
+        'output' => '<a href="'.$this->siteUrl.'node/1" title="Label">Label</a>',
         'message' => 'Link shortcode output matches.',
       ),
       array(
         'input' => '[link path="node/23" title="Google" class="link-class" style="background-color:#0FF;"] Label [/link]',
-        'output' => '<a href="/node/23" class="link-class" style="background-color:#0FF;" title="Google"> Label </a>',
+        'output' => '<a href="'.$this->siteUrl.'node/23" class="link-class" style="background-color:#0FF;" title="Google"> Label </a>',
         'message' => 'Link shortcode with title and attributes output matches.',
       ),
       array(
