@@ -264,19 +264,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    */
   public function getMediaFileUrl($mid) {
     $media_entity = Media::load($mid);
-    $bundle = $media_entity->bundle();
-    if ($bundle === 'file') {
-      $field_media = $media_entity->get('field_media_file');
-    }
-    if ($bundle === 'image') {
-      $field_media = $media_entity->get('field_media_image');
-    }
-    if ($bundle === 'video') {
-      $field_media = $media_entity->get('field_media_video_file');
-    }
-    if ($bundle == 'audio') {
-      $field_media = $media_entity->get('field_media_audio_file');
-    }
+    $field_media = $this->getMediaField($media_entity);
     if ($field_media) {
       $file = $field_media->entity;
       return file_create_url($file->getFileUri());
@@ -285,7 +273,34 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
   }
 
   /**
-   * Returns the file entity for a given image media entity id.
+   * Get a media entity field.
+   *
+   * Loop through Drupal media file fields, and return a field object if
+   * found.
+   *
+   * @param \Drupal\media\Entity\Media $entity
+   *   Drupal media entity.
+   *
+   * @return mixed|object|bool
+   *   If available, the field object.
+   */
+  public function getMediaField(Media $entity) {
+    $media_file_fields = [
+      'field_media_file',
+      'field_media_image',
+      'field_media_video_file',
+      'field_media_audio_file',
+    ];
+    foreach ($media_file_fields as $field_name) {
+      if ($entity->hasField($field_name)) {
+        return $entity->get($field_name);
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * Returns image properties for a given image media entity id.
    *
    * @param int $mid
    *   Media entity id.
@@ -302,11 +317,13 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
       $media_entity = Media::load($mid);
     }
     if ($media_entity) {
-      $field_media_image = $media_entity->get('field_media_image');
+      $field_media = $this->getMediaField($media_entity);
     }
-    if ($field_media_image) {
-      $properties['alt'] = $field_media_image->alt;
-      $file = $field_media_image->entity;
+    if ($field_media) {
+      $file = $field_media->entity;
+      if (isset($field_media->alt)) {
+        $properties['alt'] = $field_media->alt;
+      }
     }
     if ($file) {
       $properties['path'] = $file->getFileUri();
