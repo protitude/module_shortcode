@@ -315,7 +315,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
   }
 
   /**
-   * Returns a suitable title string given the user provided title and test.
+   * Returns a suitable title string given the user provided title and text.
    *
    * @param string $title
    *   The user provided title.
@@ -332,7 +332,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
       $title = '';
     }
     else {
-      $title = empty($title) ? Html::escape($text) : Html::escape($title);
+      $title = empty($title) ? trim(strip_tags($text)) : Html::escape($title);
     }
 
     return $title;
