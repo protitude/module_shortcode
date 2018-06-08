@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\ButtonShortcode.
- */
 
 namespace Drupal\shortcode\Plugin\Shortcode;
 
@@ -23,18 +19,18 @@ class ButtonShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'path' => '<front>',
       'url' => '',
       'title' => '',
       'class' => '',
       'id' => '',
       'style' => '',
-      'media_file_url' => false
-    ),
+      'media_file_url' => FALSE,
+    ],
       $attributes
     );
     $url = $attributes['url'];
@@ -58,7 +54,8 @@ class ButtonShortcode extends ShortcodeBase {
 
     $output = [
       '#theme' => 'shortcode_button',
-      '#url' => $url, // Not required for rendering, just for extra context.
+    // Not required for rendering, just for extra context.
+      '#url' => $url,
       '#attributes' => $element_attributes,
       '#text' => $text,
     ];
@@ -70,7 +67,7 @@ class ButtonShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
+    $output = [];
     $output[] = '<p><strong>' . $this->t('[button path="path" (class="additional class")]text[/button]') . '</strong> ';
     if ($long) {
       $output[] = $this->t('Inserts a link formatted like as a button. The <em>path</em> parameter provides the link target (the default is the front page).
@@ -82,4 +79,5 @@ class ButtonShortcode extends ShortcodeBase {
     }
     return implode(' ', $output);
   }
+
 }

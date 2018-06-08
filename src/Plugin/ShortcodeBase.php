@@ -2,9 +2,9 @@
 
 namespace Drupal\shortcode\Plugin;
 
+use Drupal\media\Entity\Media;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\Core\Render\Renderer;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
@@ -24,7 +24,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    *
    * @var string
    */
-  protected $plugin_id;
+  protected $pluginId;
 
   /**
    * The name of the provider that owns this filter.
@@ -45,7 +45,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    *
    * @var array
    */
-  public $settings = array();
+  public $settings = [];
 
   /**
    * {@inheritdoc}
@@ -62,12 +62,12 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    * {@inheritdoc}
    */
   public function getConfiguration() {
-    return array(
+    return [
       'id' => $this->getPluginId(),
       'provider' => $this->pluginDefinition['provider'],
       'status' => $this->status,
       'settings' => $this->settings,
-    );
+    ];
   }
 
   /**
@@ -87,18 +87,18 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'provider' => $this->pluginDefinition['provider'],
       'status' => FALSE,
       'settings' => $this->pluginDefinition['settings'],
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    return array();
+    return [];
   }
 
   /**
@@ -129,7 +129,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
     // Implementations should work with and return $form. Returning an empty
     // array here allows the text format administration form to identify whether
     // this shortcode plugin has any settings form elements.
-    return array();
+    return [];
   }
 
   /**
@@ -138,7 +138,6 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
   public function tips($long = FALSE) {
   }
 
-
   /**
    * Combines user attributes with known attributes.
    *
@@ -146,21 +145,20 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    * supported by the caller and given as a list. The returned attributes will
    * only contain the attributes in the $defaults list.
    *
-   * If the $attributes list has unsupported attributes, they will be ignored and
-   * removed from the final return list.
+   * If the $attributes list has unsupported attributes, they will be ignored
+   * and removed from the final return list.
    *
    * @param array $defaults
    *   Entire list of supported attributes and their defaults.
-   *
    * @param array $attributes
    *   User defined attributes in Shortcode tag.
    *
    * @return array
    *   Combined and filtered attribute list.
    */
-  public function getAttributes($defaults, $attributes) {
+  public function getAttributes(array $defaults, array $attributes) {
     $attributes = (array) $attributes;
-    $out = array();
+    $out = [];
     foreach ($defaults as $name => $default) {
       if (array_key_exists($name, $attributes)) {
         $out[$name] = $attributes[$name];
@@ -187,7 +185,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
     if (empty($classes)) {
       $classes = [];
     }
-    else if (!is_array($classes)) {
+    elseif (!is_array($classes)) {
       $classes = explode(' ', Html::escape($classes));
     }
 
@@ -201,6 +199,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    * Returns a url to be used in a link element given path or url.
    *
    * If a path is supplied, an absolute url will be returned.
+   *
    * @param string $path
    *   The internal path to be translated.
    * @param bool $media_file_url
@@ -213,7 +212,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
     }
 
     // Path validator. Return the path if an absolute url is detected.
-    if ( UrlHelper::isValid($path, true) ) {
+    if (UrlHelper::isValid($path, TRUE)) {
       return $path;
     }
 
@@ -221,7 +220,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
     $path = '/' . ltrim($path, '/');
 
     if (!empty($media_file_url) && substr($path, 0, 6) === "/media") {
-      $mid = $this->getMidFromPath( $path );
+      $mid = $this->getMidFromPath($path);
       if ($mid) {
         return $this->getMediaFileUrl($mid);
       }
@@ -233,7 +232,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
     }
 
     // Convert relative URL to absolute.
-    $url = Url::fromUserInput($alias, array('absolute' => TRUE))->toString();
+    $url = Url::fromUserInput($alias, ['absolute' => TRUE])->toString();
 
     return $url;
   }
@@ -243,26 +242,28 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    *
    * @param string $path
    *   The internal path to be translated.
-   * @return mixed|integer|bool
+   *
+   * @return mixed|int|bool
    *   The media id if found.
    */
-  public function getMidFromPath( $path ) {
+  public function getMidFromPath($path) {
     if (preg_match('/media\/(\d+)/', $path, $matches)) {
       return $matches[1];
     }
-    return false;
+    return FALSE;
   }
 
   /**
    * Get the file url for a media object.
    *
-   * @param integer $mid
+   * @param int $mid
    *   Media id.
-   * @return mixed|integer|bool
+   *
+   * @return mixed|int|bool
    *   The media id if found.
    */
   public function getMediaFileUrl($mid) {
-    $media_entity = \Drupal\media\Entity\Media::load($mid);
+    $media_entity = Media::load($mid);
     $bundle = $media_entity->bundle();
     if ($bundle === 'file') {
       $field_media = $media_entity->get('field_media_file');
@@ -280,25 +281,25 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
       $file = $field_media->entity;
       return file_create_url($file->getFileUri());
     }
-    return false;
+    return FALSE;
   }
 
   /**
    * Returns the file entity for a given image media entity id.
    *
-   * @param  integer $mid
+   * @param int $mid
    *   Media entity id.
    *
    * @return array
    *   File properties: `alt` and `path` where available.
    */
   public function getImageProperties($mid) {
-    $properties = array(
+    $properties = [
       'alt' => '',
-      'path' => ''
-    );
+      'path' => '',
+    ];
     if (intval($mid)) {
-      $media_entity = \Drupal\media\Entity\Media::load($mid);
+      $media_entity = Media::load($mid);
     }
     if ($media_entity) {
       $field_media_image = $media_entity->get('field_media_image');
@@ -307,7 +308,7 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
       $properties['alt'] = $field_media_image->alt;
       $file = $field_media_image->entity;
     }
-    if ( $file ) {
+    if ($file) {
       $properties['path'] = $file->getFileUri();
     }
     return $properties;
@@ -344,13 +345,16 @@ abstract class ShortcodeBase extends PluginBase implements ShortcodeInterface {
    * to the parent and affect cacheability. Shortcode should be part of content
    * and self-container.
    *
-   * @param $element
+   * @param array $elements
+   *   The structured array describing the data to be rendered.
+   *
    * @return \Drupal\Component\Render\MarkupInterface|mixed
+   *   Element stripped of any bubbleable metadata.
    */
-  public function render(&$element) {
-    /** @var Renderer $renderer */
+  public function render(array &$elements) {
+    /** @var \Drupal\Core\Render\Renderer $renderer */
     $renderer = \Drupal::service('renderer');
-    return $renderer->renderPlain($element);
+    return $renderer->renderPlain($elements);
   }
 
 }

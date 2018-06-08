@@ -7,9 +7,10 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines an shortcode annotation object.
  *
- * Plugin Namespace: Plugin\Shortcode
+ * Plugin Namespace: Plugin\Shortcode.
  *
- * For a working example, see \Drupal\shortcode\Plugin\Shortcode\HighlightShortcode
+ * For a working example, see
+ * \Drupal\shortcode\Plugin\Shortcode\HighlightShortcode
  *
  * @see \Drupal\shortcode\Shortcode/ShortcodePluginManager
  * @see \Drupal\shortcode\Plugin\ShortcodeInterface
@@ -50,40 +51,45 @@ class Shortcode extends Plugin {
    *
    * This is used as an administrative summary of what the shortcode does.
    *
-   * @ingroup plugin_translatable
-   *
    * @var \Drupal\Core\Annotation\Translation
+   * @ingroup plugin_translatable
    */
   public $title;
 
   /**
    * Additional administrative information about the shortcode's behavior.
    *
+   * @var \Drupal\Core\Annotation\Translation
+   *  (optional)
    * @ingroup plugin_translatable
-   *
-   * @var \Drupal\Core\Annotation\Translation (optional)
    */
   public $description = '';
 
   /**
    * Whether this shortcode is enabled or disabled by default.
    *
-   * @var bool (optional)
+   * @var bool
+   *  (optional)
    */
   public $status = TRUE;
 
   /**
-   * Weight of this shortcode. Shortcodes with lower weights are processed first.
+   * Weight of this shortcode.
    *
-   * @var bool (optional)
+   * Shortcodes with lower weights are processed
+   * first.
+   *
+   * @var bool
+   *  (optional)
    */
   public $weight = 99;
 
   /**
    * The default settings for the shortcode.
    *
-   * @var array (optional)
+   * @var array
+   *  (optional)
    */
-  public $settings = array();
+  public $settings = [];
 
 }

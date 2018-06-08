@@ -17,11 +17,11 @@ use Drupal\Core\Form\FormStateInterface;
  */
 interface ShortcodeInterface extends ConfigurablePluginInterface, PluginInspectionInterface {
 
-
   /**
    * Returns the administrative label for this shortcode plugin.
    *
    * @return string
+   *   Administrative label.
    */
   public function getLabel();
 
@@ -29,6 +29,7 @@ interface ShortcodeInterface extends ConfigurablePluginInterface, PluginInspecti
    * Returns the administrative description for this shortcode plugin.
    *
    * @return string
+   *   Administrative description.
    */
   public function getDescription();
 
@@ -60,7 +61,7 @@ interface ShortcodeInterface extends ConfigurablePluginInterface, PluginInspecti
    * @return string
    *   The processed text.
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED);
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED);
 
   /**
    * Generates a filter's tip.

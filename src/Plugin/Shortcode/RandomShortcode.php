@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\RandomShortcode.
- */
 
 namespace Drupal\shortcode\Plugin\Shortcode;
 
@@ -23,12 +19,12 @@ class RandomShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'length' => 8,
-    ),
+    ],
       $attributes
     );
 
@@ -48,7 +44,7 @@ class RandomShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
+    $output = [];
     $output[] = '<p><strong>[random (length="8") /]</strong>';
     $output[] = $this->t('Inserts a random text with the given length.') . '</p>';
     return implode(' ', $output);

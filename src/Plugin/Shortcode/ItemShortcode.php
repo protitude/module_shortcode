@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\ItemShortcode.
- */
 
 namespace Drupal\shortcode\Plugin\Shortcode;
 
@@ -23,15 +19,16 @@ class ItemShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'class' => '',
       'id' => '',
       'style' => '',
-      'type' => 'div', //default element to div.
-    ),
+    // Default element to div.
+      'type' => 'div',
+    ],
       $attributes
     );
 
@@ -73,7 +70,7 @@ class ItemShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
+    $output = [];
     $output[] = '<p><strong>' . $this->t('[item (class="additional class"|id=item id|type=div,d,span,s)]text[/item]') . '</strong> ';
     if ($long) {
       $output[] = $this->t('Inserts an html item (type parameter = div or span) around the given text.') . '</p>';

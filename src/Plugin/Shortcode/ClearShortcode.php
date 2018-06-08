@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\ClearShortcode.
- */
 
 namespace Drupal\shortcode\Plugin\Shortcode;
 
@@ -23,15 +19,16 @@ class ClearShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'class' => '',
       'id' => '',
       'style' => '',
-      'type' => 'div', //default element to div.
-    ),
+    // Default element to div.
+      'type' => 'div',
+    ],
       $attributes
     );
 
@@ -76,7 +73,7 @@ class ClearShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
+    $output = [];
     $output[] = '<p><strong>' . $this->t('[clear (class="additional class"|id=item id|type=div,d,span,s)]text[/clear]') . '</strong>';
     if ($long) {
       $output[] = $this->t('Inserts a float-clearing html item (type parameter = div or span) around the given text. Use the simple [clear /].') . '</p>';

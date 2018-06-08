@@ -1,14 +1,9 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\HighlightShortcode.
- */
 
 namespace Drupal\shortcode\Plugin\Shortcode;
 
 use Drupal\Core\Language\Language;
 use Drupal\shortcode\Plugin\ShortcodeBase;
-
 
 /**
  * Wraps content in a div with class highlight.
@@ -24,12 +19,12 @@ class HighlightShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'class' => '',
-    ),
+    ],
       $attributes
     );
 
@@ -41,7 +36,7 @@ class HighlightShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
+    $output = [];
     $output[] = '<p><strong>' . $this->t('[highlight (class="additional class")]text[/highlight]') . '</strong> ';
     if ($long) {
       $output[] = $this->t('Inserts span.highlight around the text.') . '</p>';

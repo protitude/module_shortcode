@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Wraps your content with a div with bootstrap column size classes.
- */
 
 namespace Drupal\shortcode_example\Plugin\Shortcode;
 
@@ -20,14 +16,17 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  */
 class BootstrapColumnShortcode extends ShortcodeBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'class' => '',
       'xs' => '',
       'sm' => '',
       'md' => '',
       'lg' => '',
-    ),
+    ],
       $attributes
     );
 
@@ -44,7 +43,7 @@ class BootstrapColumnShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
+    $output = [];
     $output[] = '<p><strong>' . $this->t('[col class="custom-class" xs="12" sm="6" md="4" lg="3"]Other HTML content here [/col]') . '</strong> ';
     if ($long) {
       $output[] = $this->t('Wraps your content with a div with bootstrap column size classes. All attributes are optional but it would not be very useful unless you define at least 1 size attribute or custom all the classes yourself using class. Setting md=4 translates to the col-md-4 class, etc.') . '</p>';
@@ -55,4 +54,5 @@ class BootstrapColumnShortcode extends ShortcodeBase {
 
     return implode(' ', $output);
   }
+
 }

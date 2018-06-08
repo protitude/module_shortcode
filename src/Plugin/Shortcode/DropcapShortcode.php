@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\DropcapShortcode.
- */
 
 namespace Drupal\shortcode\Plugin\Shortcode;
 
@@ -23,13 +19,13 @@ class DropcapShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'class' => '',
       'author' => '',
-    ),
+    ],
       $attributes
     );
 
@@ -48,7 +44,7 @@ class DropcapShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
+    $output = [];
     $output[] = '<p><strong>' . $this->t('[dropcap (class="additional class")]text[/dropcap]') . '</strong> ';
     if ($long) {
       $output[] = $this->t('Makes dropcap from the text.') . '</p>';

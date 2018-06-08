@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\LinkShortcode.
- */
 
 namespace Drupal\shortcode\Plugin\Shortcode;
 
@@ -23,18 +19,18 @@ class LinkShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'path' => '<front>',
       'url' => '',
       'title' => '',
       'class' => '',
       'id' => '',
       'style' => '',
-      'media_file_url' => false
-    ),
+      'media_file_url' => FALSE,
+    ],
       $attributes
     );
 
@@ -60,7 +56,8 @@ class LinkShortcode extends ShortcodeBase {
 
       $output = [
         '#theme' => 'shortcode_link',
-        '#url' => $url, // Not required for rendering, just for extra context.
+      // Not required for rendering, just for extra context.
+        '#url' => $url,
         '#attributes' => $element_attributes,
         '#text' => $text,
       ];
@@ -73,7 +70,7 @@ class LinkShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
+    $output = [];
     $output[] = '<p><strong>' . $this->t('[link path="the drupal path" (title="link title"|class="additional class"|id="item id"|style="css style rules")]text[/link]') . '</strong>';
     if ($long) {
       $output[] = $this->t('Inserts an aliased drupal path around the text. You can omit the text and the closing [/link], you get back the url only.') . '</p>';
@@ -85,4 +82,5 @@ class LinkShortcode extends ShortcodeBase {
 
     return implode(' ', $output);
   }
+
 }

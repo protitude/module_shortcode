@@ -4,8 +4,10 @@ namespace Drupal\shortcode\Shortcode;
 
 use Drupal\filter\Plugin\FilterInterface;
 use Drupal\Core\Language\Language;
-use Drupal\Component\Plugin\PluginManagerInterface;
 
+/**
+ * Provide the shortcode service.
+ */
 class ShortcodeService {
 
   /**
@@ -14,13 +16,13 @@ class ShortcodeService {
    * @return array
    *   Array of shortcode plugin definitions.
    */
-  function loadShortcodePlugins() {
+  public function loadShortcodePlugins() {
 
-    /** @var PluginManagerInterface $type */
+    /** @var \Drupal\Component\Plugin\PluginManagerInterface $type */
     $type = \Drupal::service('plugin.manager.shortcode');
     $definitions_raw = $type->getDefinitions();
 
-    $definitions = array();
+    $definitions = [];
     foreach ($definitions_raw as $shortcode_id => $definition) {
 
       // Default weight to 99.
@@ -41,23 +43,19 @@ class ShortcodeService {
   /**
    * Returns array of shortcode plugin definitions enabled for the filter.
    *
-   * @param FilterInterface $filter
-   *   The filter. Defaults to NULL, where all shortcode plugins will be
-   *   returned.
-   *
    * @param bool $reset
    *   TRUE if the static cache should be reset. Defaults to FALSE.
    *
    * @return array
    *   Array of shortcode plugin definitions.
    */
-  function getShortcodePluginTokens($reset = FALSE) {
+  public function getShortcodePluginTokens($reset = FALSE) {
     $shortcode_tokens = &drupal_static(__FUNCTION__);
 
     // Prime plugin cache.
     if (!isset($shortcode_tokens) || $reset) {
       $shortcodes = $this->loadShortcodePlugins();
-      $tokens = array();
+      $tokens = [];
       foreach ($shortcodes as $shortcode) {
         $tokens[$shortcode['token']] = $shortcode['token'];
       }
@@ -70,17 +68,16 @@ class ShortcodeService {
   /**
    * Returns array of shortcode plugin definitions enabled for the filter.
    *
-   * @param FilterInterface $filter
+   * @param \Drupal\filter\Plugin\FilterInterface $filter
    *   The filter. Defaults to NULL, where all shortcode plugins will be
    *   returned.
-   *
    * @param bool $reset
    *   TRUE if the static cache should be reset. Defaults to FALSE.
    *
    * @return array
    *   Array of shortcode plugin definitions, keyed by token, not id.
    */
-  function getShortcodePlugins(FilterInterface $filter = NULL, $reset = FALSE) {
+  public function getShortcodePlugins(FilterInterface $filter = NULL, $reset = FALSE) {
     $shortcodes = &drupal_static(__FUNCTION__);
 
     // Prime plugin cache.
@@ -88,8 +85,9 @@ class ShortcodeService {
 
       $shortcodes_by_id = $this->loadShortcodePlugins();
 
-      // Sorting plugins by weight using uasort() costs quite a bit more than what we're doing below.
-      $definitions = array();
+      // Sorting plugins by weight using uasort() costs quite a bit more than
+      // what we're doing below.
+      $definitions = [];
       foreach ($shortcodes_by_id as $shortcode) {
         $token = $shortcode['token'];
         // Only replace the definition if weight is smaller.
@@ -98,10 +96,10 @@ class ShortcodeService {
         }
       }
 
-      $shortcodes = array(
+      $shortcodes = [
         'all' => $shortcodes_by_id,
         'default' => $definitions,
-      );
+      ];
     }
 
     // If filter is given, only return plugin definitions enabled on the filter.
@@ -111,7 +109,7 @@ class ShortcodeService {
         $settings = $filter->settings;
 
         $shortcodes_by_id = $shortcodes['all'];
-        $enabled_shortcodes = array();
+        $enabled_shortcodes = [];
         foreach ($shortcodes_by_id as $shortcode_id => $shortcode) {
           if (isset($settings[$shortcode_id]) && $settings[$shortcode_id]) {
             $token = $shortcode['token'];
@@ -141,8 +139,8 @@ class ShortcodeService {
    * @return \Drupal\shortcode\Plugin\ShortcodeInterface
    *   The plugin instance.
    */
-  function getShortcodePlugin($shortcode_id) {
-    $plugins = &drupal_static(__FUNCTION__, array());
+  public function getShortcodePlugin($shortcode_id) {
+    $plugins = &drupal_static(__FUNCTION__, []);
     if (!isset($plugins[$shortcode_id])) {
 
       /** @var \Drupal\shortcode\Shortcode\ShortcodePluginManager $type */
@@ -201,7 +199,7 @@ class ShortcodeService {
    *   The string containing shortcodes to be processed.
    * @param string $langcode
    *   The language code of the text to be filtered.
-   * @var FilterInterface $filter
+   * @param \Drupal\filter\Plugin\FilterInterface $filter
    *   The text filter.
    *
    * @return string
@@ -210,11 +208,12 @@ class ShortcodeService {
   public function process($text, $langcode = Language::LANGCODE_NOT_SPECIFIED, FilterInterface $filter = NULL) {
     $shortcodes = $this->getShortcodePlugins($filter);
 
-    // Processing recursively, now embedding tags within other tags is supported!
+    // Processing recursively, now embedding tags within other tags is
+    // supported!
     $chunks = preg_split('!(\[{1,2}.*?\]{1,2})!', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
 
-    $heap = array();
-    $heap_index = array();
+    $heap = [];
+    $heap_index = [];
 
     foreach ($chunks as $c) {
 
@@ -235,7 +234,6 @@ class ShortcodeService {
       // Decide this is a Shortcode tag or not.
       if (!$escaped && ($c[0] == '[') && (substr($c, -1, 1) == ']')) {
         // The $c maybe contains Shortcode macro.
-
         // This is maybe a self-closing tag.
         // Removes outer [].
         $original_text = $c;
@@ -257,20 +255,21 @@ class ShortcodeService {
           /*
            * The exploded array elements meaning:
            * 0 - the full tag text?
-           * 1/5 - An extra [] to allow for escaping Shortcodes with double [[]].
+           * 1/5 - An extra [] to allow for escaping Shortcodes with double
+           * [[]].
            * 2 - The Shortcode name.
            * 3 - The Shortcode argument list.
            * 4 - The content of a Shortcode when it wraps some content.
            */
 
-          $m = array(
+          $m = [
             $c,
             '',
             $tag,
             implode(' ', $ts),
             NULL,
             '',
-          );
+          ];
           array_unshift($heap_index, '_string_');
           array_unshift($heap, $this->processTag($m, $shortcodes));
         }
@@ -278,8 +277,8 @@ class ShortcodeService {
         elseif ($c[0] == '/') {
           $closing_tag = substr($c, 1);
 
-          $process_heap = array();
-          $process_heap_index = array();
+          $process_heap = [];
+          $process_heap_index = [];
           $found = FALSE;
 
           // Get elements from heap and process.
@@ -289,14 +288,14 @@ class ShortcodeService {
 
             if ($closing_tag == $tag) {
               // Process the whole tag.
-              $m = array(
+              $m = [
                 $tag . ' ' . $heap_text,
                 '',
                 $tag,
                 $heap_text,
                 implode('', $process_heap),
                 '',
-              );
+              ];
               $str = $this->processTag($m, $shortcodes);
               array_unshift($heap_index, '_string_');
               array_unshift($heap, $str);
@@ -345,7 +344,7 @@ class ShortcodeService {
    *   Text to be processed.
    * @param string $langcode
    *   The language code of the text to be filtered.
-   * @param FilterInterface $filter
+   * @param \Drupal\filter\Plugin\FilterInterface $filter
    *   The filter plugin that triggered this process.
    *
    * @return string
@@ -353,26 +352,28 @@ class ShortcodeService {
    */
   public function postprocessText($text, $langcode, FilterInterface $filter = NULL) {
 
-    //preg_match_all('/<p>s.*<!--.*-->.*<div/isU', $text, $r);
-    //dpm($r, '$r');
-
-    // Take note these are disrupted by the comments inserted by twig debug mode.
-    $patterns = array(
+    // preg_match_all('/<p>s.*<!--.*-->.*<div/isU', $text, $r);
+    // dpm($r, '$r');
+    // Take note these are disrupted by the comments inserted by twig debug
+    // mode.
+    $patterns = [
       '|#!#|is',
       '!<p>(&nbsp;|\s)*(<\/*div>)!is',
       '!<p>(&nbsp;|\s)*(<div)!is',
-      //'!<p>(&nbsp;|\s)*(<!--(.*?)-->)*(<div)!is', // Trying to ignore HTML comments
+      // '!<p>(&nbsp;|\s)*(<!--(.*?)-->)*(<div)!is', // Trying to ignore HTML
+      // comments.
       '!(<\/div.*?>)\s*</p>!is',
       '!(<div.*?>)\s*</p>!is',
-    );
+    ];
 
-    $replacements = array(
+    $replacements = [
       '',
       '\\2',
       '\\2',
-      //'\\3',
+      // '\\3',.
       '\\1',
-      '\\1');
+      '\\1',
+    ];
     return preg_replace($patterns, $replacements, $text);
   }
 
@@ -389,18 +390,17 @@ class ShortcodeService {
    *     2 - The Shortcode name
    *     3 - The Shortcode argument list
    *     4 - The content of a Shortcode when it wraps some content.
-   *
    * @param array $enabled_shortcodes
    *   Array of enabled shortcodes for the active text format.
    *
-   * @return string|FALSE
+   * @return string|false
    *   FALSE on failure.
    */
-  protected function processTag($m, $enabled_shortcodes) {
+  protected function processTag(array $m, array $enabled_shortcodes) {
     $shortcode_token = $m[2];
 
     $shortcode = NULL;
-    if (isset($enabled_shortcodes[$shortcode_token])){
+    if (isset($enabled_shortcodes[$shortcode_token])) {
       $shortcode_id = $enabled_shortcodes[$shortcode_token]['id'];
       $shortcode = $this->getShortcodePlugin($shortcode_id);
     }
@@ -412,7 +412,7 @@ class ShortcodeService {
         return $m[1] . $m[4] . $m[5];
       }
       // This is a self-closing tag.
-      else{
+      else {
         return $m[1] . $m[5];
       }
     }
@@ -436,7 +436,10 @@ class ShortcodeService {
    *   List of attributes and their value.
    */
   protected function parseAttrs($text) {
-    $attributes = array();
+    $attributes = [];
+    if (empty($text)) {
+      return $attributes;
+    }
     $pattern = '/(\w+)\s*=\s*"([^"]*)"(?:\s|$)|(\w+)\s*=\s*\'([^\']*)\'(?:\s|$)|(\w+)\s*=\s*([^\s\'"]+)(?:\s|$)|"([^"]*)"(?:\s|$)|(\S+)(?:\s|$)/';
     $text = preg_replace("/[\x{00a0}\x{200b}]+/u", " ", $text);
     $text = html_entity_decode($text);
@@ -465,31 +468,4 @@ class ShortcodeService {
     return $attributes;
   }
 
-  /**
-   * Retrieve the Shortcode regular expression for searching.
-   *
-   * The regular expression combines the Shortcode tags in the regular expression
-   * in a regex class.
-   *
-   * The regular expression contains 6 different sub matches to help with parsing.
-   *
-   * 1/6 - An extra [ or ] to allow for escaping shortcodes with double [[]]
-   * 2 - The Shortcode name
-   * 3 - The Shortcode argument list
-   * 4 - The self closing /
-   * 5 - The content of a Shortcode when it wraps some content.
-   *
-   * @param array $names
-   *   The tag names.
-   *
-   * @return string
-   *   The Shortcode search regular expression
-   */
-//  protected function getShortcodeRegex($names) {
-//    $regex_expression = implode('|', array_map('preg_quote', $names));
-//
-//    // WARNING! Do not change this regex without changing do_shortcode_tag()
-//    // and strip_shortcodes().
-//    return '(.?)\[(' . $regex_expression . ')\b(.*?)(?:(\/))?\](?:(.+?)\[\/\2\])?(.?)';
-//  }
 }

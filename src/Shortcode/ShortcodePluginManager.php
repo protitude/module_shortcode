@@ -2,7 +2,6 @@
 
 namespace Drupal\shortcode\Shortcode;
 
-use Drupal\Component\Plugin\Factory\DefaultFactory;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
@@ -30,8 +29,10 @@ class ShortcodePluginManager extends DefaultPluginManager {
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct('Plugin/Shortcode', $namespaces, $module_handler, 'Drupal\shortcode\Plugin\ShortcodeInterface', 'Drupal\shortcode\Annotation\Shortcode');
 
-    // Allow other modules to alter shortcode info via hook_shortcode_info_alter.
+    // Allow other modules to alter shortcode info via
+    // hook_shortcode_info_alter.
     $this->alterInfo('shortcode_info');
     $this->setCacheBackend($cache_backend, 'shortcode_info_plugins');
   }
+
 }

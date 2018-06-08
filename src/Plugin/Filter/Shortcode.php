@@ -5,8 +5,6 @@ namespace Drupal\shortcode\Plugin\Filter;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
-use Drupal\Core\Url;
-use Drupal\shortcode\Plugin\ShortcodeInterface;
 
 /**
  * Provides a filter for insert view.
@@ -30,40 +28,40 @@ class Shortcode extends FilterBase {
     $shortcodeService = \Drupal::service('shortcode');
     $shortcodes = $shortcodeService->loadShortcodePlugins();
 
-    $shortcodes_by_provider = array();
+    $shortcodes_by_provider = [];
 
     // Group shortcodes by provider.
     foreach ($shortcodes as $shortcode_id => $shortcode_info) {
       $provider_id = $shortcode_info['provider'];
       if (!isset($shortcodes_by_provider[$provider_id])) {
-        $shortcodes_by_provider[$provider_id] = array();
+        $shortcodes_by_provider[$provider_id] = [];
       }
       $shortcodes_by_provider[$provider_id][$shortcode_id] = $shortcode_info;
     }
 
     // Generate form elements.
-    $settings = array();
+    $settings = [];
     foreach ($shortcodes_by_provider as $provider_id => $shortcodes) {
 
       // Add section header.
-      $settings['header-'.$provider_id] = array(
+      $settings['header-' . $provider_id] = [
         '#markup' => '<b class="shortcodeSectionHeader">Shortcodes provided by ' . $provider_id . '</b>',
-      );
+      ];
 
       // Sort definitions by weight property.
       $sorted_shortcodes = $shortcodes;
-      uasort($sorted_shortcodes, function($a, $b) {
+      uasort($sorted_shortcodes, function ($a, $b) {
         return $b['weight'] - $a['weight'];
       });
 
-      /** @var ShortcodeInterface $shortcode */
+      /** @var \Drupal\shortcode\Plugin\ShortcodeInterface $shortcode */
       foreach ($sorted_shortcodes as $shortcode_id => $shortcode_info) {
-        $settings[$shortcode_id] = array(
+        $settings[$shortcode_id] = [
           '#type' => 'checkbox',
-          '#title' => $this->t('Enable %name shortcode', array('%name' => $shortcode_info['title'])),
+          '#title' => $this->t('Enable %name shortcode', ['%name' => $shortcode_info['title']]),
           '#default_value' => isset($this->settings[$shortcode_id]) ? $this->settings[$shortcode_id] : TRUE,
           '#description' => isset($shortcode_info['description']) ? $shortcode_info['description'] : $this->t('Enable or disable this shortcode in this input format'),
-        );
+        ];
       }
     }
     return $settings;
@@ -97,7 +95,7 @@ class Shortcode extends FilterBase {
     $type = \Drupal::service('plugin.manager.shortcode');
 
     // Gather tips defined in all enabled plugins.
-    $tips = array();
+    $tips = [];
     foreach ($shortcodes as $shortcode_info) {
       /** @var \Drupal\shortcode\Plugin\ShortcodeInterface $shortcode */
       $shortcode = $type->createInstance($shortcode_info['id']);
@@ -110,4 +108,5 @@ class Shortcode extends FilterBase {
     }
     return '<p>You can use wp-like shortcodes such as: </p><ul>' . $output . '</ul>';
   }
+
 }
