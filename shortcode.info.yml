@@ -3,5 +3,5 @@ type: module
 description: 'Provides shortcodes filter framework and API (like WP shortcodes)'
 core: 8.x
 dependencies:
-  - filter
+  - drupal:filter
 package: 'Input filters'
