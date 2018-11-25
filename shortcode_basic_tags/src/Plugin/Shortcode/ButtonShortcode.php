@@ -9,7 +9,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * The image shortcode.
  *
  * @Shortcode(
- *   id = "shortcode_button",
+ *   id = "button",
  *   title = @Translation("Button"),
  *   description = @Translation("Insert a link formatted like a button.")
  * )

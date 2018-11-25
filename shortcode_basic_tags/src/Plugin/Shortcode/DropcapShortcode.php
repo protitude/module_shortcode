@@ -9,7 +9,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * Replace the given text formatted like as a dropcap.
  *
  * @Shortcode(
- *   id = "shortcode_dropcap",
+ *   id = "dropcap",
  *   title = @Translation("Dropcap"),
  *   description = @Translation("Replace the given text formatted like as a dropcap.")
  * )

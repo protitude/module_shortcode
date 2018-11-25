@@ -10,7 +10,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * The image shortcode.
  *
  * @Shortcode(
- *   id = "shortcode_img",
+ *   id = "img",
  *   title = @Translation("Image"),
  *   description = @Translation("Show an image.")
  * )

@@ -9,7 +9,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * Replace the given text formatted like as a quote.
  *
  * @Shortcode(
- *   id = "shortcode_quote",
+ *   id = "quote",
  *   title = @Translation("Quote"),
  *   description = @Translation("Replace the given text formatted like as a quote.")
  * )

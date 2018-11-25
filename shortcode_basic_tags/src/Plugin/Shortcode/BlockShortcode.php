@@ -10,7 +10,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * Insert div or span around the text with some css classes.
  *
  * @Shortcode(
- *   id = "shortcode_block",
+ *   id = "block",
  *   title = @Translation("Block"),
  *   description = @Translation("Insert a block.")
  * )

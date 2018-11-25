@@ -44,6 +44,7 @@ class Shortcode extends FilterBase {
     foreach ($shortcodes_by_provider as $provider_id => $shortcodes) {
 
       // Add section header.
+      // todo: add Translate markup.
       $settings['header-' . $provider_id] = [
         '#markup' => '<b class="shortcodeSectionHeader">Shortcodes provided by ' . $provider_id . '</b>',
       ];
@@ -106,6 +107,7 @@ class Shortcode extends FilterBase {
     foreach ($tips as $tip) {
       $output .= '<li>' . $tip . '</li>';
     }
+    // todo: add Translate markup.
     return '<p>You can use wp-like shortcodes such as: </p><ul>' . $output . '</ul>';
   }
 

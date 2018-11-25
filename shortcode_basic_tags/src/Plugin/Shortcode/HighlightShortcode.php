@@ -9,7 +9,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * Wraps content in a div with class highlight.
  *
  * @Shortcode(
- *   id = "shortcode_highlight",
+ *   id = "highlight",
  *   title = @Translation("Highlight"),
  *   description = @Translation("Highlights text by wrapping in a span with class highlight")
  * )

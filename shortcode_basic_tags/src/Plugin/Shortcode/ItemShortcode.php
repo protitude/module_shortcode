@@ -9,7 +9,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * Insert div or span around the text with some css classes.
  *
  * @Shortcode(
- *   id = "shortcode_item",
+ *   id = "item",
  *   title = @Translation("Item"),
  *   description = @Translation("Insert div or span around the text with some css classes.")
  * )
