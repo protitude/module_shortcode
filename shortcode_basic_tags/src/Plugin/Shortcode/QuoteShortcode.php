@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\QuoteShortcode.
- */
 
 namespace Drupal\shortcode_basic_tags\Plugin\Shortcode;
 
@@ -13,7 +9,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * Replace the given text formatted like as a quote.
  *
  * @Shortcode(
- *   id = "quote",
+ *   id = "shortcode_quote",
  *   title = @Translation("Quote"),
  *   description = @Translation("Replace the given text formatted like as a quote.")
  * )
@@ -23,13 +19,13 @@ class QuoteShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'class' => '',
       'author' => '',
-    ),
+    ],
       $attributes
     );
 
@@ -48,11 +44,11 @@ class QuoteShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
-    $output[] = '<p><strong>' . t('[quote (class="additional class" | author="author name")]text[/quote]') . '</strong>';
+    $output = [];
+    $output[] = '<p><strong>' . $this->t('[quote (class="additional class" | author="author name")]text[/quote]') . '</strong>';
     if ($long) {
-      $output[] = t('Formats the text like as a quote.') . '</p>';
-      $output[] = '<p>' . t('Sample css:') . '</p>';
+      $output[] = $this->t('Formats the text like as a quote.') . '</p>';
+      $output[] = '<p>' . $this->t('Sample css:') . '</p>';
       $output[] = '
         <code>
           .quote {
@@ -78,7 +74,7 @@ class QuoteShortcode extends ShortcodeBase {
         </code><p></p>';
     }
     else {
-      $output[] = t('Formats the text like as a quote. Additional class names can be added by the <em>class</em> parameter.') . '</p>';
+      $output[] = $this->t('Formats the text like as a quote. Additional class names can be added by the <em>class</em> parameter.') . '</p>';
     }
 
     return implode(' ', $output);

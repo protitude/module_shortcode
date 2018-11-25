@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\ItemShortcode.
- */
 
 namespace Drupal\shortcode_basic_tags\Plugin\Shortcode;
 
@@ -13,7 +9,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * Insert div or span around the text with some css classes.
  *
  * @Shortcode(
- *   id = "item",
+ *   id = "shortcode_item",
  *   title = @Translation("Item"),
  *   description = @Translation("Insert div or span around the text with some css classes.")
  * )
@@ -23,15 +19,16 @@ class ItemShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'class' => '',
       'id' => '',
       'style' => '',
-      'type' => 'div', //default element to div.
-    ),
+    // Default element to div.
+      'type' => 'div',
+    ],
       $attributes
     );
 
@@ -73,14 +70,14 @@ class ItemShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
-    $output[] = '<p><strong>' . t('[item (class="additional class"|id=item id|type=div,d,span,s)]text[/item]') . '</strong> ';
+    $output = [];
+    $output[] = '<p><strong>' . $this->t('[item (class="additional class"|id=item id|type=div,d,span,s)]text[/item]') . '</strong> ';
     if ($long) {
-      $output[] = t('Inserts an html item (type parameter = div or span) around the given text.') . '</p>';
-      $output[] = '<p>' . t('Additional class names can be added by the <em>class</em> parameter. The id parameter gives the html an unique css id.') . '</p>';
+      $output[] = $this->t('Inserts an html item (type parameter = div or span) around the given text.') . '</p>';
+      $output[] = '<p>' . $this->t('Additional class names can be added by the <em>class</em> parameter. The id parameter gives the html an unique css id.') . '</p>';
     }
     else {
-      $output[] = t('Inserts an html item (div or span) around the given text.') . '</p>';
+      $output[] = $this->t('Inserts an html item (div or span) around the given text.') . '</p>';
     }
 
     return implode(' ', $output);

@@ -1,11 +1,8 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\ImageShortcode.
- */
 
 namespace Drupal\shortcode_basic_tags\Plugin\Shortcode;
 
+use Drupal\image\Entity\ImageStyle;
 use Drupal\Core\Language\Language;
 use Drupal\shortcode\Plugin\ShortcodeBase;
 
@@ -13,7 +10,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * The image shortcode.
  *
  * @Shortcode(
- *   id = "img",
+ *   id = "shortcode_img",
  *   title = @Translation("Image"),
  *   description = @Translation("Show an image.")
  * )
@@ -23,25 +20,42 @@ class ImageShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'class' => '',
       'alt' => '',
       'src' => '',
-    ),
+      'mid' => '',
+      'imagestyle' => '',
+    ],
       $attributes
     );
 
     $class = $this->addClass($attributes['class'], 'img');
 
-    $output = array(
+    if ($attributes['mid']) {
+      $properties = $this->getImageProperties($attributes['mid']);
+      if ($properties['path']) {
+        if ($attributes['imagestyle']) {
+          $attributes['src'] = ImageStyle::load($attributes['imagestyle'])->buildUrl($properties['path']);
+        }
+        else {
+          $attributes['src'] = file_create_url($properties['path']);
+        }
+      }
+      if ($properties['alt'] && !$attributes['alt']) {
+        $attributes['alt'] = $properties['alt'];
+      }
+    }
+
+    $output = [
       '#theme' => 'shortcode_img',
       '#src' => $attributes['src'],
       '#class' => $class,
       '#alt' => $attributes['alt'],
-    );
+    ];
 
     return $this->render($output);
   }
@@ -50,9 +64,10 @@ class ImageShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
-    $output[] = '<p><strong>' . t('[img scr="image.jpg" (class="additional class"|alt="alt text")/]') . '</strong> ';
-    $output[] = t('Inserts an image based on the given image url.') . '</p>';
+    $output = [];
+    $output[] = '<p><strong>' . $this->t('[img (src="image.jpg"|mid="1") (class="additional class"|alt="alt text"|imagestyle="medium")/]') . '</strong> ';
+    $output[] = $this->t('Inserts an image based on the given image url or media id. If media id is supplied with no alt text, the alt text from the media object will be applied.') . '</p>';
     return implode(' ', $output);
   }
+
 }

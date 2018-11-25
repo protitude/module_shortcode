@@ -1,11 +1,6 @@
 <?php
 
-namespace Drupal\shortcode\Plugin\Shortcode;
-
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\BlockShortcode.
- */
+namespace Drupal\shortcode_basic_tags\Plugin\Shortcode;
 
 use Drupal\block_content\Entity\BlockContent;
 use Drupal\Core\Language\Language;
@@ -15,7 +10,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * Insert div or span around the text with some css classes.
  *
  * @Shortcode(
- *   id = "block",
+ *   id = "shortcode_block",
  *   title = @Translation("Block"),
  *   description = @Translation("Insert a block.")
  * )

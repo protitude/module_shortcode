@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\ButtonShortcode.
- */
 
 namespace Drupal\shortcode_basic_tags\Plugin\Shortcode;
 
@@ -13,7 +9,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * The image shortcode.
  *
  * @Shortcode(
- *   id = "button",
+ *   id = "shortcode_button",
  *   title = @Translation("Button"),
  *   description = @Translation("Insert a link formatted like a button.")
  * )
@@ -23,21 +19,24 @@ class ButtonShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'path' => '<front>',
       'url' => '',
       'title' => '',
       'class' => '',
       'id' => '',
       'style' => '',
-    ),
+      'media_file_url' => FALSE,
+    ],
       $attributes
     );
-
-    $url = $this->getUrlFromPath($attributes['path'], $attributes['url']);
+    $url = $attributes['url'];
+    if (empty($url)) {
+      $url = $this->getUrlFromPath($attributes['path'], $attributes['media_file_url']);
+    }
     $title = $this->getTitleFromAttributes($attributes['title'], $text);
     $class = $this->addClass($attributes['class'], 'button');
 
@@ -55,7 +54,8 @@ class ButtonShortcode extends ShortcodeBase {
 
     $output = [
       '#theme' => 'shortcode_button',
-      '#url' => $url, // Not required for rendering, just for extra context.
+    // Not required for rendering, just for extra context.
+      '#url' => $url,
       '#attributes' => $element_attributes,
       '#text' => $text,
     ];
@@ -67,7 +67,7 @@ class ButtonShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
+    $output = [];
     $output[] = '<p><strong>' . $this->t('[button path="path" (class="additional class")]text[/button]') . '</strong> ';
     if ($long) {
       $output[] = $this->t('Inserts a link formatted like as a button. The <em>path</em> parameter provides the link target (the default is the front page).
@@ -79,4 +79,5 @@ class ButtonShortcode extends ShortcodeBase {
     }
     return implode(' ', $output);
   }
+
 }

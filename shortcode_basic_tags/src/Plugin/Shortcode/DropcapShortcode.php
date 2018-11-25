@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\DropcapShortcode.
- */
 
 namespace Drupal\shortcode_basic_tags\Plugin\Shortcode;
 
@@ -13,7 +9,7 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * Replace the given text formatted like as a dropcap.
  *
  * @Shortcode(
- *   id = "dropcap",
+ *   id = "shortcode_dropcap",
  *   title = @Translation("Dropcap"),
  *   description = @Translation("Replace the given text formatted like as a dropcap.")
  * )
@@ -23,13 +19,13 @@ class DropcapShortcode extends ShortcodeBase {
   /**
    * {@inheritdoc}
    */
-  public function process($attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
 
     // Merge with default attributes.
-    $attributes = $this->getAttributes(array(
+    $attributes = $this->getAttributes([
       'class' => '',
       'author' => '',
-    ),
+    ],
       $attributes
     );
 
@@ -48,11 +44,11 @@ class DropcapShortcode extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function tips($long = FALSE) {
-    $output = array();
-    $output[] = '<p><strong>' . t('[dropcap (class="additional class")]text[/dropcap]') . '</strong> ';
+    $output = [];
+    $output[] = '<p><strong>' . $this->t('[dropcap (class="additional class")]text[/dropcap]') . '</strong> ';
     if ($long) {
-      $output[] = t('Makes dropcap from the text.') . '</p>';
-      $output[] = '<p>' . t('Sample css:') . '</p>';
+      $output[] = $this->t('Makes dropcap from the text.') . '</p>';
+      $output[] = '<p>' . $this->t('Sample css:') . '</p>';
       $output[] = '<code>
         .dropcap {
           display:block;
@@ -65,7 +61,7 @@ class DropcapShortcode extends ShortcodeBase {
         </code><p></p>';
     }
     else {
-      $output[] = t('Makes dropcap from the text. Additional class names can be added by the <em>class</em> parameter.') . '</p>';
+      $output[] = $this->t('Makes dropcap from the text. Additional class names can be added by the <em>class</em> parameter.') . '</p>';
     }
 
     return implode(' ', $output);
