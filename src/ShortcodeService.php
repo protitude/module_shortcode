@@ -16,16 +16,16 @@ class ShortcodeService {
    *
    * @var \Drupal\devel\DevelDumperPluginManagerInterface
    */
-  protected $ShortCodeManager;
+  protected $shortCodeManager;
 
   /**
    * Constructs a ShortcodeService object.
    *
-   * @param \Drupal\shortcode\ShortcodePluginManager $ShortcodePluginManager
+   * @param \Drupal\shortcode\ShortcodePluginManager $shortCodePluginManager
    *   The config factory service.
    */
-  public function __construct(ShortcodePluginManager $ShortcodePluginManager) {
-    $this->ShortCodeManager = $ShortcodePluginManager;
+  public function __construct(ShortcodePluginManager $shortCodePluginManager) {
+    $this->shortCodeManager = $shortCodePluginManager;
   }
 
   /**
@@ -37,9 +37,7 @@ class ShortcodeService {
   public function loadShortcodePlugins() {
 
     /** @var \Drupal\Component\Plugin\PluginManagerInterface $type */
-    // todo: Add Dependency Injection instead of static call.
-    $type = \Drupal::service('plugin.manager.shortcode');
-    $definitions_raw = $type->getDefinitions();
+    $definitions_raw = $this->shortCodeManager->getDefinitions();
 
     $definitions = [];
     foreach ($definitions_raw as $shortcode_id => $definition) {
