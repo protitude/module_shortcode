@@ -1,16 +1,16 @@
 <?php
 
-namespace Drupal\shortcode\Shortcode;
+namespace Drupal\shortcode;
 
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 
 /**
- * Provides a Shortcode plugin manager.
+ * Provides a ShortCode plugin manager.
  *
- * @see \Drupal\shortcode\Shortcode\Annotation\Shortcode
- * @see \Drupal\shortcode\Shortcode\ShortcodeInterface
+ * @see \Drupal\shortcode\Annotation\Shortcode
+ * @see \Drupal\shortcode\ShortcodeInterface
  * @see plugin_api
  */
 class ShortcodePluginManager extends DefaultPluginManager {
