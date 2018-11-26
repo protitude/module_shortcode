@@ -24,7 +24,7 @@ class Shortcode extends FilterBase {
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
 
-    /** @var \Drupal\shortcode\Shortcode\ShortcodeService $shortcodeService */
+    /** @var \Drupal\shortcode\ShortcodeService $shortcodeService */
     $shortcodeService = \Drupal::service('shortcode');
     $shortcodes = $shortcodeService->loadShortcodePlugins();
 
@@ -73,7 +73,7 @@ class Shortcode extends FilterBase {
    */
   public function process($text, $langcode) {
     if (!empty($text)) {
-      /** @var \Drupal\shortcode\Shortcode\ShortcodeService $shortcodeEngine */
+      /** @var \Drupal\shortcode\ShortcodeService $shortcodeEngine */
       $shortcodeEngine = \Drupal::service('shortcode');
       $text = $shortcodeEngine->process($text, $langcode, $this);
     }
@@ -86,13 +86,13 @@ class Shortcode extends FilterBase {
    */
   public function tips($long = FALSE) {
 
-    /** @var \Drupal\shortcode\Shortcode\ShortcodeService $type */
+    /** @var \Drupal\shortcode\ShortcodeService $type */
     $type = \Drupal::service('shortcode');
 
+    // todo: it duplicates the tips section.
     // Get enabled shortcodes for this text format.
     $shortcodes = $type->getShortcodePlugins($this);
-
-    /** @var \Drupal\shortcode\Shortcode\ShortcodePluginManager $type */
+    /** @var \Drupal\shortcode\ShortcodePluginManager $type */
     $type = \Drupal::service('plugin.manager.shortcode');
 
     // Gather tips defined in all enabled plugins.
@@ -107,6 +107,7 @@ class Shortcode extends FilterBase {
     foreach ($tips as $tip) {
       $output .= '<li>' . $tip . '</li>';
     }
+    // todo: add render array instead of li/ul markup.
     // todo: add Translate markup.
     return '<p>You can use wp-like shortcodes such as: </p><ul>' . $output . '</ul>';
   }

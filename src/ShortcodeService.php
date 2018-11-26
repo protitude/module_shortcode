@@ -16,7 +16,7 @@ class ShortcodeService {
    *
    * @var \Drupal\devel\DevelDumperPluginManagerInterface
    */
-  protected $shortCodeManager;
+  protected $shortCodePluginManager;
 
   /**
    * Constructs a ShortcodeService object.
@@ -25,7 +25,7 @@ class ShortcodeService {
    *   The config factory service.
    */
   public function __construct(ShortcodePluginManager $shortCodePluginManager) {
-    $this->shortCodeManager = $shortCodePluginManager;
+    $this->shortCodePluginManager = $shortCodePluginManager;
   }
 
   /**
@@ -37,7 +37,7 @@ class ShortcodeService {
   public function loadShortcodePlugins() {
 
     /** @var \Drupal\Component\Plugin\PluginManagerInterface $type */
-    $definitions_raw = $this->shortCodeManager->getDefinitions();
+    $definitions_raw = $this->shortCodePluginManager->getDefinitions();
 
     $definitions = [];
     foreach ($definitions_raw as $shortcode_id => $definition) {
