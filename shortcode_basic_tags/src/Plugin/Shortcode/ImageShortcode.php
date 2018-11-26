@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\shortcode\Plugin\Shortcode;
+namespace Drupal\shortcode_basic_tags\Plugin\Shortcode;
 
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Core\Language\Language;

@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Register hooks for shortcodes that use Twig templates.
+ * Register hooks for ShortCodes that use Twig templates.
  */
 
 /**
  * Implements hook_theme().
  */
-function shortcode_theme() {
+function shortcode_basic_tags_theme() {
   return [
     // Quote.
     'shortcode_quote' => [

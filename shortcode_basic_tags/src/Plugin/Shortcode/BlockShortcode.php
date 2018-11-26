@@ -1,11 +1,6 @@
 <?php
 
-namespace Drupal\shortcode\Plugin\Shortcode;
-
-/**
- * @file
- * Contains \Drupal\shortcode\Plugin\Shortcode\BlockShortcode.
- */
+namespace Drupal\shortcode_basic_tags\Plugin\Shortcode;
 
 use Drupal\block_content\Entity\BlockContent;
 use Drupal\Core\Language\Language;

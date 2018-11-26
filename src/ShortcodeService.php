@@ -1,26 +1,43 @@
 <?php
 
-namespace Drupal\shortcode\Shortcode;
+namespace Drupal\shortcode;
 
 use Drupal\filter\Plugin\FilterInterface;
 use Drupal\Core\Language\Language;
+use Drupal\shortcode\ShortcodePluginManager;
 
 /**
- * Provide the shortcode service.
+ * Provide the ShortCode service.
  */
 class ShortcodeService {
 
   /**
-   * Returns preprocessed shortcode plugin definitions.
+   * The devel dumper plugin manager.
+   *
+   * @var \Drupal\devel\DevelDumperPluginManagerInterface
+   */
+  protected $shortCodePluginManager;
+
+  /**
+   * Constructs a ShortcodeService object.
+   *
+   * @param \Drupal\shortcode\ShortcodePluginManager $shortCodePluginManager
+   *   The config factory service.
+   */
+  public function __construct(ShortcodePluginManager $shortCodePluginManager) {
+    $this->shortCodePluginManager = $shortCodePluginManager;
+  }
+
+  /**
+   * Returns preprocessed ShortCode plugin definitions.
    *
    * @return array
-   *   Array of shortcode plugin definitions.
+   *   Array of ShortCode plugin definitions.
    */
   public function loadShortcodePlugins() {
 
     /** @var \Drupal\Component\Plugin\PluginManagerInterface $type */
-    $type = \Drupal::service('plugin.manager.shortcode');
-    $definitions_raw = $type->getDefinitions();
+    $definitions_raw = $this->shortCodePluginManager->getDefinitions();
 
     $definitions = [];
     foreach ($definitions_raw as $shortcode_id => $definition) {
@@ -131,10 +148,10 @@ class ShortcodeService {
   }
 
   /**
-   * Creates shortcode plugin instance or loads from static cache.
+   * Creates ShortCode plugin instance or loads from static cache.
    *
    * @param string $shortcode_id
-   *   The shortcode plugin id.
+   *   The shorShortCodetcode plugin id.
    *
    * @return \Drupal\shortcode\Plugin\ShortcodeInterface
    *   The plugin instance.
@@ -152,13 +169,13 @@ class ShortcodeService {
   }
 
   /**
-   * Checking the given tag is valid Shortcode tag or not.
+   * Checking the given tag is valid ShortCode tag or not.
    *
    * @param string $tag
    *   The tag name.
    *
    * @return bool
-   *   Returns TRUE if the given $tag is valid shortcode tag.
+   *   Returns TRUE if the given $tag is valid ShortCode tag.
    */
   public function isValidShortcodeTag($tag) {
     $tokens = $this->getShortcodePluginTokens();

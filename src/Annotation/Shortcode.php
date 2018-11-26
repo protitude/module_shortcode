@@ -10,9 +10,9 @@ use Drupal\Component\Annotation\Plugin;
  * Plugin Namespace: Plugin\Shortcode.
  *
  * For a working example, see
- * \Drupal\shortcode\Plugin\Shortcode\HighlightShortcode
+ * \Drupal\shortcode_ecample\Plugin\Shortcode\BootstrapColumnShortcode
  *
- * @see \Drupal\shortcode\Shortcode/ShortcodePluginManager
+ * @see \Drupal\shortcode\ShortcodePluginManager
  * @see \Drupal\shortcode\Plugin\ShortcodeInterface
  * @see \Drupal\shortcode\Plugin\ShortcodeBase
  * @see plugin_api

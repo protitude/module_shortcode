@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\shortcode\Plugin\Shortcode;
+namespace Drupal\shortcode_basic_tags\Plugin\Shortcode;
 
 use Drupal\Core\Language\Language;
 use Drupal\shortcode\Plugin\ShortcodeBase;
@@ -9,12 +9,12 @@ use Drupal\shortcode\Plugin\ShortcodeBase;
  * Insert div or span around the text with some css classes.
  *
  * @Shortcode(
- *   id = "clear",
- *   title = @Translation("Clear"),
- *   description = @Translation("Insert a float-clearing div for a proper layout.")
+ *   id = "item",
+ *   title = @Translation("Item"),
+ *   description = @Translation("Insert div or span around the text with some css classes.")
  * )
  */
-class ClearShortcode extends ShortcodeBase {
+class ItemShortcode extends ShortcodeBase {
 
   /**
    * {@inheritdoc}
@@ -31,8 +31,6 @@ class ClearShortcode extends ShortcodeBase {
     ],
       $attributes
     );
-
-    $class = $this->addClass($attributes['class'], 'clearfix');
 
     // Only allow allowed types, and replace common shorthands.
     // TODO: Use map.
@@ -51,7 +49,7 @@ class ClearShortcode extends ShortcodeBase {
 
     // Build element attributes to be used in twig.
     $element_attributes = [
-      'class' => $class,
+      'class' => $attributes['class'],
       'id' => $attributes['id'],
       'style' => $attributes['style'],
     ];
@@ -60,12 +58,11 @@ class ClearShortcode extends ShortcodeBase {
     $element_attributes = array_filter($element_attributes);
 
     $output = [
-      '#theme' => 'shortcode_clear',
+      '#theme' => 'shortcode_item',
       '#type' => $attributes['type'],
       '#attributes' => $element_attributes,
       '#text' => $text,
     ];
-
     return $this->render($output);
   }
 
@@ -74,13 +71,13 @@ class ClearShortcode extends ShortcodeBase {
    */
   public function tips($long = FALSE) {
     $output = [];
-    $output[] = '<p><strong>' . $this->t('[clear (class="additional class"|id=item id|type=div,d,span,s)]text[/clear]') . '</strong>';
+    $output[] = '<p><strong>' . $this->t('[item (class="additional class"|id=item id|type=div,d,span,s)]text[/item]') . '</strong> ';
     if ($long) {
-      $output[] = $this->t('Inserts a float-clearing html item (type parameter = div or span) around the given text. Use the simple [clear /].') . '</p>';
+      $output[] = $this->t('Inserts an html item (type parameter = div or span) around the given text.') . '</p>';
       $output[] = '<p>' . $this->t('Additional class names can be added by the <em>class</em> parameter. The id parameter gives the html an unique css id.') . '</p>';
     }
     else {
-      $output[] = $this->t('Inserts a float-clearing html item (div or span) around the given text. Use the simple [clear /].') . '</p>';
+      $output[] = $this->t('Inserts an html item (div or span) around the given text.') . '</p>';
     }
 
     return implode(' ', $output);
