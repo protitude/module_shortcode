@@ -1,0 +1,21 @@
+{
+  "name": "protitude/shortcode",
+  "description": "Provides ShortCodes filter framework and API (like WP ShortCodes)",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://www.drupal.org/project/shortcode",
+  "minimum-stability": "dev",
+  "authors": [],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/shortcode",
+    "source": "https://git.drupalcode.org/project/shortcode"
+  },
+
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://asset-packagist.org"
+    }
+  ],
+  "license": "GPL2+"
+}

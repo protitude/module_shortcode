@@ -1,4 +1,4 @@
-name: 'protitude/shortcode'
+name: 'Shortcode'
 type: module
 description: 'Provides ShortCodes filter framework and API (like WP ShortCodes)'
 core: 8.x
