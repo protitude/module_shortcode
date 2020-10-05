@@ -4,7 +4,8 @@ namespace Drupal\shortcode\Plugin;
 
 use Drupal\Core\Language\Language;
 use Drupal\Component\Plugin\PluginInspectionInterface;
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Component\Plugin\ConfigurableInterface;
+use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -15,7 +16,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @see \Drupal\shortcode\Plugin\ShortcodeBase
  * @see plugin_api
  */
-interface ShortcodeInterface extends ConfigurablePluginInterface, PluginInspectionInterface {
+interface ShortcodeInterface extends ConfigurableInterface, DependentPluginInterface, PluginInspectionInterface {
 
   /**
    * Returns the administrative label for this shortcode plugin.

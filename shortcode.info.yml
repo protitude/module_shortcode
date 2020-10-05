@@ -1,7 +1,8 @@
-name: 'Shortcode'
+name: 'protitude/shortcode'
 type: module
 description: 'Provides ShortCodes filter framework and API (like WP ShortCodes)'
 core: 8.x
 dependencies:
   - drupal:filter
 package: 'Input filters'
+core_version_requirement: ^8 || ^9

@@ -3,7 +3,7 @@
 namespace Drupal\shortcode\Tests;
 
 use Drupal\Core\Url;
-use Drupal\simpletest\WebTestBase;
+use Drupal\Tests\BrowserTestBase;
 use Drupal\shortcode\Shortcode\ShortcodeService;
 
 /**
@@ -11,7 +11,7 @@ use Drupal\shortcode\Shortcode\ShortcodeService;
  *
  * @group shortcode
  */
-class ShortcodeTest extends WebTestBase {
+class ShortcodeTest extends BrowserTestBase {
 
   /**
    * Modules to install.
